@@ -42,4 +42,39 @@ class UserController extends Controller
             ]); 
         }
     }
+
+    public function update(UserRequest $request, User $user)
+    {
+        DB::beginTransaction();
+        try {
+            $user->update($request->all());
+            DB::commit();
+            return response()->json(
+                [
+                    'message' => 'Successfully updated!',
+                    'data' => $user,
+                    'error' => false
+                ]
+            );
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Something wen\'t wrong',
+                'data' => null,
+                'error' => true
+            ]);
+        }
+    }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+        return response()->json(
+            [
+                'message' => 'Successfully deleted!',
+                'data' => $user,
+                'error' => false
+            ]
+        );
+    }
 }
