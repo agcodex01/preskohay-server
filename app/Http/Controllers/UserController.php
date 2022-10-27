@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use DB;
+use Hash;
+use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
@@ -14,7 +16,7 @@ class UserController extends Controller
         $users = User::all();
 
         return response()->json([
-            'data' => $user,
+            'data' => $users,
             'message' => 'Successfully retrieved!',
             'error' => false,
         ]);
@@ -22,9 +24,14 @@ class UserController extends Controller
 
     public function store(UserRequest $request)
     {
+        $data = $request->all();
+
+        $data['password'] = Hash::make($data['password']);
+        $data['birthdate'] = Carbon::parse($data['birthdate']);
+
         DB::beginTransaction();
         try {
-            $user = User::create($request->all());
+            $user = User::create($data);
             DB::commit();
             return response()->json(
                 [
@@ -34,12 +41,13 @@ class UserController extends Controller
                 ]
             );
         } catch (\Exception $e) {
+            return $e;
             DB::rollback();
             return response()->json([
                 'message' => 'Something wen\'t wrong',
                 'data' => null,
                 'error' => true
-            ]); 
+            ]);
         }
     }
 
