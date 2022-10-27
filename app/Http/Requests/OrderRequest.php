@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
 class OrderRequest extends FormRequest
@@ -26,8 +27,20 @@ class OrderRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            //
-        ];
+        $req = Request::route();
+        switch ($req->action['as']) {
+            case 'orders.store':
+                return [
+                    'data' => 'required'
+                ];
+                break;
+
+            case 'orders.update':
+                return [
+                    'quantity' => 'required'
+                ];
+                break;
+        }
+
     }
 }

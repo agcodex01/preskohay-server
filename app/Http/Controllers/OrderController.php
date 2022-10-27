@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Http\Requests\OrderRequest;
 
 class OrderController extends Controller
 {
@@ -35,10 +36,12 @@ class OrderController extends Controller
      */
     public function create()
     {
-         // $user = Auth::user();
-         $user = User::first();
+        // $user = Auth::user();
+        $user = User::first();
 
-         return $user->orders()->create();
+        $user->orders()->create();
+
+        return $user->orders;
     }
 
     /**
@@ -47,7 +50,7 @@ class OrderController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(OrderRequest $request)
     {
         $total = 0;
         // $user = Auth::user();
@@ -55,9 +58,7 @@ class OrderController extends Controller
 
         $params = $request->validate();
 
-        if ($user->orders->isEmpty()) {
-            $this->create();
-        }
+        $this->create();
 
         foreach($params as $data) {
             $user->orders()->latest()->first()
@@ -98,7 +99,7 @@ class OrderController extends Controller
      */
     public function edit(Order $order)
     {
-        //
+        return $order;
     }
 
     /**
@@ -108,9 +109,13 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Order $order)
+    public function update(OrderRequest $request, Order $order)
     {
-        //
+        $params = $request->validated();
+
+        $order->update($params);
+
+        return $order;
     }
 
     /**
