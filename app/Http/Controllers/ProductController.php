@@ -3,11 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use Illuminate\Http\Request;
 use App\Http\Requests\ProductRequest;
 
 class ProductController extends Controller
 {
+    public $data = [];
+
+    public function __construct()
+    {
+        $this->data['error'] = true;
+        $this->data['message'] = 'Something went wrong.';
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,14 +21,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $data = [];
-        $data['products'] = Product::get();
-
-        if (!isset($data['products'])) {
-            $data['message'] = 'No Data Found.';
-        }
-
-        return response()->json($data);
+        return Product::all();
     }
 
     /**
@@ -43,20 +42,16 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        $data = [];
-        $data['error'] = true;
-        $data['message'] = 'Something went wrong.';
-
-        $params = $request->all();
+        $params = $request->validated();
 
         $newProduct = Product::create($params);
 
         if ($newProduct) {
-            $data['message'] = 'Successfully added new product!';
-            $data['error'] = false;
+            $this->data['message'] = 'Successfully added new product!';
+            $this->data['error'] = false;
         }
 
-        return response()->json($data);
+        return $this->data;
     }
 
     /**
@@ -67,7 +62,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return response()->json($product);
+        return $product;
     }
 
     /**
@@ -79,20 +74,16 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, Product $product)
     {
-        $data = [];
-        $data['error'] = true;
-        $data['message'] = 'Something went wrong.';
-        
-        $params = $request->all();
+        $params = $request->validated();
 
         $updated = $product->update($params);
 
         if ($updated) {
-            $data['error']   = false;
-            $data['message'] = 'Successfully updated the product!';
+            $this->data['error']   = false;
+            $this->data['message'] = 'Successfully updated the product!';
         }
 
-        return response()->json($data);
+        return $this->data;
     }
 
     /**
@@ -103,17 +94,13 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $data = [];
-        $data['error'] = false;
-        $data['message'] = 'Successfully deleted';
-
         $deleted = $product->delete();
 
-        if (!$deleted) {
-            $data['error'] = true;
-            $data['message'] = 'Something went wrong.';
+        if ($deleted) {
+            $this->data['error'] = false;
+            $this->data['message'] = 'Successfully deleted';
         }
 
-        return response()->json($data);
+        return $this->data;
     }
 }
