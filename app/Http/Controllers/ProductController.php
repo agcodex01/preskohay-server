@@ -87,6 +87,13 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        return $this->tempDelete($product);
+        $deleted = $product->delete();
+
+        if ($deleted) {
+            $this->data['error'] = false;
+            $this->data['message'] = 'Successfully Deleted.';
+        }
+
+        return $this->data;
     }
 }

@@ -17,6 +17,16 @@ class OrderController extends Controller
      */
     public function index()
     {
+        return Order::all();
+    }
+
+    /**
+     * Display a listing of the order by user
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function orderByUser()
+    {
         // $user = Auth::user();
         $user = User::first();
 
@@ -107,7 +117,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the shipping fee
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Order  $order
@@ -116,20 +126,37 @@ class OrderController extends Controller
     public function update(OrderRequest $request, Order $order)
     {
         $params = $request->validated();
+        
+        $update = $order->update($params);
 
-        $order->update($params);
+        if ($update) {
+            $this->data['error'] = false;
+            $this->data['message'] = 'Successfully updated.';
+        }
 
-        return $order;
+        return $this->data;
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Update the status by user
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Order $order)
+    public function updateByUser(OrderRequest $request, Order $order)
     {
-       return $this->tempDelete($order);
+        $params = $request->validated();
+
+        $update = $order->update($params);
+
+        if ($update) {
+            $this->data['error'] = false;
+            $this->data['message'] = 'Successfully updated.';
+        }
+
+        return $this->data;
     }
+
+    
 }

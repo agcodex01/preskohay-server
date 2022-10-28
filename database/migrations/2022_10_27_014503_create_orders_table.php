@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->float('total')->default('0');
             $table->integer('status')->default('0');
+            $table->float('shipping_fee')->default('30');
             $table->softDeletes();
             $table->timestamps();
         });

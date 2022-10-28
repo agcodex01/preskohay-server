@@ -21,4 +21,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('orders', OrderController::class);
+Route::post('/order/update/{order}', [OrderController::class, 'updateByUser'])->name('order.user.update');
+Route::get('/user-orders', [OrderController::class, 'orderByUser'])->name('order.user');
 Route::apiResource('products', ProductController::class);

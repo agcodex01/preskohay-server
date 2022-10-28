@@ -37,7 +37,12 @@ class OrderRequest extends FormRequest
 
             case 'orders.update':
                 return [
-                    'quantity' => 'required'
+                    'shipping_fee' => 'required'
+                ];
+                break;
+            case 'order.user.update':
+                return [
+                    'status' => 'required'
                 ];
                 break;
         }
