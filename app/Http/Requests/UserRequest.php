@@ -24,7 +24,7 @@ class UserRequest extends FormRequest
     public function rules()
     {
         $userId = $this->user ? $this->user->id : '';
-        return [
+        $rules = [
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'required|unique:users,email,'. $userId,
@@ -35,5 +35,11 @@ class UserRequest extends FormRequest
             'user_role' => 'required',
             'contact_number' => 'required'
         ];
+
+        if ($userId) {
+            unset($rules['password']);
+        }
+
+        return $rules;
     }
 }
