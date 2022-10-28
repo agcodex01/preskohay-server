@@ -18,7 +18,7 @@ use App\Http\Controllers\Auth\LoginController;
 */
 
 Route::post('/login', [LoginController::class, 'login'])->name('user.login');
-Route::post('/customer/register', [UserController::class, 'store'])->name('customers.register');
+Route::post('/user/register', [UserController::class, 'store'])->name('customers.register');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class)->except(['store']);
