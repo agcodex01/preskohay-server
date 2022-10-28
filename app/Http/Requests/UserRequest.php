@@ -29,8 +29,8 @@ class UserRequest extends FormRequest
             'last_name' => 'required',
             'email' => 'required|unique:users,email,'. $userId,
             'age' => 'required',
-            'user_role' => 'required',
-            'birthdate' => 'required'
+            'birthdate' => 'required',
+            'password' => 'required|min:8'
         ];
     }
 }
