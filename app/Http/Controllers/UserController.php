@@ -15,69 +15,25 @@ class UserController extends Controller
     {
         $users = User::all();
 
-        return [
-            'data' => $users,
-            'message' => 'Successfully retrieved!',
-            'error' => false,
-        ];
+        return $users;
     }
 
     public function store(UserRequest $request)
     {
         $data = $request->all();
-
         $data['password'] = Hash::make($data['password']);
         $data['birthdate'] = Carbon::parse($data['birthdate']);
 
-        DB::beginTransaction();
-        try {
-            $user = User::create($data);
-            DB::commit();
-            return [
-                'message' => 'Successfully created!',
-                'data' => $user,
-                'error' => false
-            ];
-
-        } catch (\Exception $e) {
-            return $e;
-            DB::rollback();
-            return [
-                'message' => 'Something wen\'t wrong',
-                'data' => null,
-                'error' => true
-            ];
-        }
+        return User::create($data);
     }
 
     public function update(UserRequest $request, User $user)
     {
-        DB::beginTransaction();
-        try {
-            $user->update($request->all());
-            DB::commit();
-            return [
-                    'message' => 'Successfully updated!',
-                    'data' => $user,
-                    'error' => false
-                ];
-        } catch (\Exception $e) {
-            DB::rollback();
-            return [
-                'message' => 'Something wen\'t wrong',
-                'data' => null,
-                'error' => true
-            ];
-        }
+        return $user->update($request->all());
     }
 
     public function destroy(User $user)
     {
-        $user->delete();
-        return [
-                'message' => 'Successfully deleted!',
-                'data' => $user,
-                'error' => false
-            ];
+        return $user->delete();
     }
 }

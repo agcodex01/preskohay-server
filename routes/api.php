@@ -16,9 +16,10 @@ use App\Http\Controllers\Auth\LoginController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    Route::apiResource('users', UserController::class);
-    Route::post('/login', [LoginController::class, 'login'])->name('user.login');
+Route::post('/login', [LoginController::class, 'login'])->name('user.login');
+Route::post('/customer/register', [UserController::class, 'store'])->name('customers.register');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('users', UserController::class)->except(['store']);
     Route::post('/logout', [LoginController::class, 'logout'])->name('user.logout');
 });
-

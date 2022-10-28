@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
 use Hash;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
+use App\Http\Controllers\Controller;
 
 class LoginController extends Controller
 {
@@ -16,15 +17,7 @@ class LoginController extends Controller
             if (Hash::check($request->password, $user->password)) {
                 $token = $user->createToken('authentication_token');
 
-                $data = [
-                    'user' => $user,
-                    'toke' => $token->plainTextToken
-                ];
-                return [
-                    'error' => false,
-                    'data'  => $data,
-                    'message' => 'Login Succesfully'
-                ];
+                return ['token' => $token->plainTextToken];
             }
         }
         return [
@@ -36,11 +29,6 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-        return response()->json([
-            'error' => false,
-            'message' => 'Successfully logout!',
-            'data' => null
-        ]);
+        return $request->user()->currentAccessToken()->delete();
     }
 }
