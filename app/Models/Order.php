@@ -12,7 +12,8 @@ class Order extends Model
 
     protected $fillable = [
         'total',
-        'status'
+        'status',
+        'shipping_fee'
     ];
 
     public function products()

@@ -18,16 +18,6 @@ class ProductController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -37,14 +27,9 @@ class ProductController extends Controller
     {
         $params = $request->validated();
 
-        $newProduct = Product::create($params);
+        $product = Product::create($params);
 
-        if ($newProduct) {
-            $this->data['message'] = 'Successfully added new product!';
-            $this->data['error'] = false;
-        }
-
-        return $this->data;
+        return $product;
     }
 
     /**
@@ -69,14 +54,9 @@ class ProductController extends Controller
     {
         $params = $request->validated();
 
-        $updated = $product->update($params);
+        $product->update($params);
 
-        if ($updated) {
-            $this->data['error']   = false;
-            $this->data['message'] = 'Successfully updated the product!';
-        }
-
-        return $this->data;
+        return $product;
     }
 
     /**
@@ -87,13 +67,6 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $deleted = $product->delete();
-
-        if ($deleted) {
-            $this->data['error'] = false;
-            $this->data['message'] = 'Successfully Deleted.';
-        }
-
-        return $this->data;
+        return $product->delete();
     }
 }

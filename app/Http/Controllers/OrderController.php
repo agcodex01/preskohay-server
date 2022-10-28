@@ -25,25 +25,11 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function orderByUser()
+    public function orderByUser($id)
     {
-        // $user = Auth::user();
-        $user = User::first();
+        $user = User::findOrFail($id);
 
         return $user->orders()->with('products')->get();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        // $user = Auth::user();
-        $user = User::first();
-
-        return $user->orders()->create();
     }
 
     /**
@@ -52,46 +38,33 @@ class OrderController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(OrderRequest $request)
+    public function store(OrderRequest $request, $id)
     {
-        DB::beginTransaction();
+        $total = 0;
+        $user = User::findOrFail($id);
 
-        try {
-            $total = 0;
-            // $user = Auth::user();
-            $user = User::first();
+        $params = $request->validated();
 
-            $params = $request->validate();
+        $user->orders()->create();
 
-            $this->create();
+        $order = $user->orders()->latest()->first();
 
-            $order = $user->orders()->latest()->first();
-
-            foreach($params as $data) {
-                $order->products()
-                    ->syncWithoutDetaching([
-                        $data['product_id'] => [
-                            'quantity' => $data['quantity'],
-                            'subtotal' => $data['subtotal'],
-                        ]
-                    ]);
-                $total += $data['subtotal'];
-            }
-
-            $order->update([
-                'total' => $total,
-            ]);
-
-            DB::commit();
-
-            $this->data['error']    = false;
-            $this->data['message']  = 'Successfully Added Order.';
-        } catch (\Exception $error) {
-            DB::rollBack();
-            Log::error($error->getMessage());
+        foreach($params as $data) {
+            $order->products()
+                ->syncWithoutDetaching([
+                    $data['product_id'] => [
+                        'quantity' => $data['quantity'],
+                        'subtotal' => $data['subtotal'],
+                    ]
+                ]);
+            $total += $data['subtotal'];
         }
 
-        return $this->data;
+        $order->update([
+            'total' => $total,
+        ]);
+
+        return $order;
     }
 
     /**
@@ -106,17 +79,6 @@ class OrderController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Order $order)
-    {
-        return $order;
-    }
-
-    /**
      * Update the shipping fee
      *
      * @param  \Illuminate\Http\Request  $request
@@ -124,17 +86,15 @@ class OrderController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(OrderRequest $request, Order $order)
-    {
+    { 
         $params = $request->validated();
         
-        $update = $order->update($params);
+        $order->update([
+            'total'         => $order->total + $params['shipping_fee'],
+            'shipping_fee'  => $params['shipping_fee']
+        ]);
 
-        if ($update) {
-            $this->data['error'] = false;
-            $this->data['message'] = 'Successfully updated.';
-        }
-
-        return $this->data;
+        return $order;
     }
 
     /**
@@ -144,19 +104,12 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function updateByUser(OrderRequest $request, Order $order)
+    public function updateStatus(OrderRequest $request, Order $order)
     {
         $params = $request->validated();
 
-        $update = $order->update($params);
+        $order->update($params);
 
-        if ($update) {
-            $this->data['error'] = false;
-            $this->data['message'] = 'Successfully updated.';
-        }
-
-        return $this->data;
+        return $order;
     }
-
-    
 }

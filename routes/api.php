@@ -20,7 +20,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('orders', OrderController::class);
-Route::post('/order/update/{order}', [OrderController::class, 'updateByUser'])->name('order.user.update');
-Route::get('/user-orders', [OrderController::class, 'orderByUser'])->name('order.user');
+Route::get('/orders', [OrderController::class, 'index'])->name('orders');
+Route::post('/orders/store/{id}', [OrderController::class, 'store'])->name('order.product');
+Route::get('/orders/{order}', [OrderController::class, 'show'])->name('order.show');
+Route::post('/orders/update/{order}', [OrderController::class, 'update'])->name('order.product.update');
+
+Route::get('/user-orders/{id}', [OrderController::class, 'orderByUser'])->name('order.user');
+Route::post('/user-orders/update/{order}', [OrderController::class, 'updateStatus'])->name('order.user.update');
+
 Route::apiResource('products', ProductController::class);

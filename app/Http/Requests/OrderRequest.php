@@ -29,15 +29,18 @@ class OrderRequest extends FormRequest
     {
         $req = Request::route();
         switch ($req->action['as']) {
-            case 'orders.store':
+            case 'orders.product':
                 return [
-                    'data' => 'required'
+                    'products'            => 'required|array',
+                    'products.*.id'       => 'required|exists:products',
+                    'products.*.quantity' => 'required|numeric',
+                    'products.*.subtotal' => 'required|numeric'
                 ];
                 break;
 
-            case 'orders.update':
+            case 'order.product.update':
                 return [
-                    'shipping_fee' => 'required'
+                    'shipping_fee' => 'required|numeric'
                 ];
                 break;
             case 'order.user.update':
