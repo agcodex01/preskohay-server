@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\LoginController;
@@ -23,3 +24,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class)->except(['store']);
     Route::post('/logout', [LoginController::class, 'logout'])->name('user.logout');
 });
+
+Route::apiResource('products', ProductController::class);
