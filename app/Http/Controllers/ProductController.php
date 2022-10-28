@@ -7,13 +7,6 @@ use App\Http\Requests\ProductRequest;
 
 class ProductController extends Controller
 {
-    public $data = [];
-
-    public function __construct()
-    {
-        $this->data['error'] = true;
-        $this->data['message'] = 'Something went wrong.';
-    }
     /**
      * Display a listing of the resource.
      *
@@ -94,13 +87,6 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $deleted = $product->delete();
-
-        if ($deleted) {
-            $this->data['error'] = false;
-            $this->data['message'] = 'Successfully deleted';
-        }
-
-        return $this->data;
+        return $this->tempDelete($product);
     }
 }

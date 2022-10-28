@@ -5,17 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\OrderRequest;
-
+use Illuminate\Support\Facades\Log;
 class OrderController extends Controller
 {
-    public $data = [];
-
-    public function __construct()
-    {
-        $this->data['error'] = true;
-        $this->data['message'] = 'Something went wrong.';
-    }
     /**
      * Display a listing of the resource.
      *
@@ -26,7 +20,7 @@ class OrderController extends Controller
         // $user = Auth::user();
         $user = User::first();
 
-        return $user->orders;
+        return $user->orders()->with('products')->get();
     }
 
     /**
@@ -39,9 +33,7 @@ class OrderController extends Controller
         // $user = Auth::user();
         $user = User::first();
 
-        $user->orders()->create();
-
-        return $user->orders;
+        return $user->orders()->create();
     }
 
     /**
@@ -52,32 +44,44 @@ class OrderController extends Controller
      */
     public function store(OrderRequest $request)
     {
-        $total = 0;
-        // $user = Auth::user();
-        $user = User::first();
+        DB::beginTransaction();
 
-        $params = $request->validate();
+        try {
+            $total = 0;
+            // $user = Auth::user();
+            $user = User::first();
 
-        $this->create();
+            $params = $request->validate();
 
-        foreach($params as $data) {
-            $user->orders()->latest()->first()
-                ->products()
-                ->syncWithoutDetaching([
-                    $data['product_id'] => [
-                        'quantity' => $data['quantity'],
-                        'subtotal' => $data['subtotal'],
-                    ]
-                ]);
-            $total += $data['subtotal'];
-        }
+            $this->create();
 
-        $user->orders()->latest()->first()
-            ->update([
+            $order = $user->orders()->latest()->first();
+
+            foreach($params as $data) {
+                $order->products()
+                    ->syncWithoutDetaching([
+                        $data['product_id'] => [
+                            'quantity' => $data['quantity'],
+                            'subtotal' => $data['subtotal'],
+                        ]
+                    ]);
+                $total += $data['subtotal'];
+            }
+
+            $order->update([
                 'total' => $total,
             ]);
 
-        return $user->orders()->latest()->first();
+            DB::commit();
+
+            $this->data['error']    = false;
+            $this->data['message']  = 'Successfully Added Order.';
+        } catch (\Exception $error) {
+            DB::rollBack();
+            Log::error($error->getMessage());
+        }
+
+        return $this->data;
     }
 
     /**
@@ -126,6 +130,6 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        //
+       return $this->tempDelete($order);
     }
 }
