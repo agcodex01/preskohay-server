@@ -32,7 +32,7 @@ class OrderRequest extends FormRequest
             case 'orders.product':
                 return [
                     'products'            => 'required|array',
-                    'products.*.id'       => 'required|exists:products',
+                    'products.*.id'       => 'required|exists:products,id',
                     'products.*.quantity' => 'required|numeric',
                     'products.*.subtotal' => 'required|numeric'
                 ];
