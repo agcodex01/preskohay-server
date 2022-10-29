@@ -27,6 +27,12 @@ class ProductController extends Controller
     {
         $params = $request->validated();
 
+        $params['image'] = base64_encode(
+            file_get_contents(
+                $request->file('image')->path()
+            )
+        );
+
         $product = Product::create($params);
 
         return $product;
@@ -54,6 +60,12 @@ class ProductController extends Controller
     {
         $params = $request->validated();
 
+        $params['image'] = base64_encode(
+            file_get_contents(
+                $request->file('image')->path()
+            )
+        );
+        
         $product->update($params);
 
         return $product;
