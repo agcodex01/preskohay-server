@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\LoginController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -16,8 +18,12 @@ use App\Http\Controllers\OrderController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/login', [LoginController::class, 'login'])->name('user.login');
+Route::post('/user/register', [UserController::class, 'store'])->name('customers.register');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('users', UserController::class)->except(['store']);
+    Route::post('/logout', [LoginController::class, 'logout'])->name('user.logout');
 });
 
 Route::get('/orders', [OrderController::class, 'index'])->name('orders');
