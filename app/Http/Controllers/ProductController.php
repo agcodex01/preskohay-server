@@ -7,13 +7,6 @@ use App\Http\Requests\ProductRequest;
 
 class ProductController extends Controller
 {
-    public $data = [];
-
-    public function __construct()
-    {
-        $this->data['error'] = true;
-        $this->data['message'] = 'Something went wrong.';
-    }
     /**
      * Display a listing of the resource.
      *
@@ -22,16 +15,6 @@ class ProductController extends Controller
     public function index()
     {
         return Product::all();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -44,14 +27,9 @@ class ProductController extends Controller
     {
         $params = $request->validated();
 
-        $newProduct = Product::create($params);
+        $product = Product::create($params);
 
-        if ($newProduct) {
-            $this->data['message'] = 'Successfully added new product!';
-            $this->data['error'] = false;
-        }
-
-        return $this->data;
+        return $product;
     }
 
     /**
@@ -76,14 +54,9 @@ class ProductController extends Controller
     {
         $params = $request->validated();
 
-        $updated = $product->update($params);
+        $product->update($params);
 
-        if ($updated) {
-            $this->data['error']   = false;
-            $this->data['message'] = 'Successfully updated the product!';
-        }
-
-        return $this->data;
+        return $product;
     }
 
     /**
@@ -94,13 +67,6 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $deleted = $product->delete();
-
-        if ($deleted) {
-            $this->data['error'] = false;
-            $this->data['message'] = 'Successfully deleted';
-        }
-
-        return $this->data;
+        return $product->delete();
     }
 }
