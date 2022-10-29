@@ -53,6 +53,12 @@ class PostController extends Controller
     {
         $params = $request->validated();
 
+        $params['image'] = base64_encode(
+            file_get_contents(
+                $request->file('image')->path()
+            )
+        );
+        
         $post->products()->create($params);
 
         return $user->posts()->with('products')->get();
