@@ -20,7 +20,7 @@ class UserController extends Controller
 
     public function store(UserRequest $request)
     {
-        $data = $request->all();
+        $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
         $data['birthdate'] = Carbon::parse($data['birthdate']);
 
@@ -29,7 +29,7 @@ class UserController extends Controller
 
     public function update(UserRequest $request, User $user)
     {
-        return $user->update($request->all());
+        return $user->update($request->validated());
     }
 
     public function destroy(User $user)
