@@ -33,7 +33,8 @@ class UserRequest extends FormRequest
             'password' => 'required|min:8',
             'address' => 'required',
             'user_role' => 'required',
-            'contact_number' => 'required'
+            'contact_number' => 'required',
+            'profile_image' => 'string', // base64 string
         ];
 
         if ($userId) {

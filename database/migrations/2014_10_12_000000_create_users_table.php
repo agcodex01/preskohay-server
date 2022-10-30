@@ -25,6 +25,7 @@ return new class extends Migration
             $table->date('birthdate');
             $table->string('address');
             $table->string('contact_number');
+            $table->string('profile_image');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
