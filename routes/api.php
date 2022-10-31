@@ -2,11 +2,12 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\OrderController;
-
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Auth\LoginController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -35,3 +36,6 @@ Route::get('/user-orders/{id}', [OrderController::class, 'orderByUser'])->name('
 Route::post('/user-orders/update/{order}', [OrderController::class, 'updateStatus'])->name('order.user.update');
 
 Route::apiResource('products', ProductController::class);
+Route::apiResource('posts', PostController::class);
+Route::post('/post/product/{post}', [PostController::class, 'storeByProducts'])->name('post.products');
+Route::post('/product/post/{post}', [PostController::class, 'productToPost'])->name('product.post');

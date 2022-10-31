@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
-class OrderRequest extends FormRequest
+class PostRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,26 +25,23 @@ class OrderRequest extends FormRequest
     {
         $req = Request::route();
         switch ($req->action['as']) {
-            case 'orders.product':
+            case 'posts.store':
+            case 'posts.update':
                 return [
-                    'products'            => 'required|array',
-                    'products.*.id'       => 'required|exists:products,id',
-                    'products.*.quantity' => 'required|numeric',
-                    'products.*.subtotal' => 'required|numeric'
+                    'title'         => 'required',
+                    'description'   => 'required',
+                    'image'         => 'required'
                 ];
                 break;
 
-            case 'order.product.update':
+            case 'product.post':
                 return [
-                    'shipping_fee' => 'required|numeric'
-                ];
-                break;
-            case 'order.user.update':
-                return [
-                    'status' => 'required'
+                    'products' => 'required|array',
+                    'products.*.id' => 'required|exists:products,id',
                 ];
                 break;
         }
 
+        
     }
 }

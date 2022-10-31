@@ -13,10 +13,6 @@ class ProductRequest extends FormRequest
      */
     public function authorize()
     {
-        // $user = \Auth::user();
-
-        // return $user ? true : false;
-
         return true;
     }
 
@@ -30,10 +26,11 @@ class ProductRequest extends FormRequest
         return [
             'name'              => 'required|unique:products',
             'unit'              => 'required',
-            'stocks'            => 'required',
+            'image'             => 'required',
+            'stocks'            => 'required|numeric',
             'category'          => 'required',
             'description'       => 'required',
-            'price_per_unit'    => 'required'
+            'price_per_unit'    => 'required|numeric'
         ];
     }
 }
