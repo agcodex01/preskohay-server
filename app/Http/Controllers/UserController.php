@@ -24,11 +24,29 @@ class UserController extends Controller
         $data['password'] = Hash::make($data['password']);
         $data['birthdate'] = Carbon::parse($data['birthdate']);
 
+        // check has file
+        if ($request->hasFile('profile_image')) {
+            $image_data = file_get_contents($data['profile_image']);
+            $image_ext = $data['profile_image']->extension();
+            $image_base64 = 'data:image/' . $image_ext . ';base64,' . base64_encode($image_data);
+            $data['profile_image'] = $image_base64;
+        }
+
         return User::create($data);
     }
 
     public function update(UserRequest $request, User $user)
     {
+        $data = $request->validated();
+
+        // check has file
+        if ($request->hasFile('profile_image')) {
+            $image_data = file_get_contents($data['profile_image']);
+            $image_ext = $data['profile_image']->extension();
+            $image_base64 = 'data:image/' . $image_ext . ';base64,' . base64_encode($image_data);
+            $data['profile_image'] = $image_base64;
+        }
+
         return $user->update($request->validated());
     }
 
