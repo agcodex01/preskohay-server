@@ -32,7 +32,7 @@ class UserRequest extends FormRequest
             'birthdate' => 'required',
             'password' => 'required|min:8',
             'address' => 'required',
-            'user_role' => 'required',
+            'user_role' => 'required|in:admin,user,farmer,driver',
             'contact_number' => 'required',
             'profile_image' => 'image',
         ];

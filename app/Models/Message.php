@@ -13,11 +13,17 @@ class Message extends Model
 
     protected $fillable = [
         'message',
-        'user_id'
+        'sender_id',
+        'receiver_id'
     ];
 
-    public function messages()
+    public function sender()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'sender_id', 'id');
+    }
+
+    public function receiver()
+    {
+        return $this->belongsTo(User::class, 'receiver_id', 'id');
     }
 }

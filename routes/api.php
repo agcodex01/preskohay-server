@@ -25,9 +25,11 @@ Route::post('/user/register', [UserController::class, 'store'])->name('customers
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class)->except(['store']);
     Route::post('/logout', [LoginController::class, 'logout'])->name('user.logout');
-    Route::get('/messages', [ChatController::class, 'fetchMessage']);
+    Route::get('/messages/{receiver_id}', [ChatController::class, 'fetchMessages']);
     Route::post('/message', [ChatController::class, 'sendMessage']);
+    Route::post('/pusher/auth', [ChatController::class, 'postAuth']);
 });
+
 
 Route::get('/orders', [OrderController::class, 'index'])->name('orders');
 Route::post('/orders/store/{id}', [OrderController::class, 'store'])->name('order.product');
