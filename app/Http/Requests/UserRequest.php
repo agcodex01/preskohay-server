@@ -22,7 +22,7 @@ class UserRequest extends FormRequest
      * @return array<string, mixed>
      */
     public function rules()
-    {
+    { 
         $userId = $this->user ? $this->user->id : '';
         $rules = [
             'first_name' => 'required',
