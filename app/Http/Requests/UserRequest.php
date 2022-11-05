@@ -33,7 +33,7 @@ class UserRequest extends FormRequest
             'password' => 'required|min:8',
             'address' => 'required',
             'user_role' => 'required',
-            'contact_number' => 'required'
+            'contact_number' => 'required|regex:/(01)[0-9]{9}/'
         ];
 
         if ($userId) {

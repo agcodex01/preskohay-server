@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Order;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Requests\OrderRequest;
-use Illuminate\Support\Facades\Log;
+use App\Http\Services\SmsService;
+
 class OrderController extends Controller
 {
     /**
@@ -86,9 +85,9 @@ class OrderController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(OrderRequest $request, Order $order)
-    { 
+    {
         $params = $request->validated();
-        
+
         $order->update([
             'total'         => $order->total + $params['shipping_fee'],
             'shipping_fee'  => $params['shipping_fee']
