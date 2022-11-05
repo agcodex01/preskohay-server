@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\LoginController;
 
 /*
@@ -25,7 +26,11 @@ Route::post('/user/register', [UserController::class, 'store'])->name('customers
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class)->except(['store']);
     Route::post('/logout', [LoginController::class, 'logout'])->name('user.logout');
+    Route::post('/messages/{receiver_id}', [ChatController::class, 'fetchMessages']);
+    Route::post('/message', [ChatController::class, 'sendMessage']);
+    Route::post('/pusher/auth', [ChatController::class, 'postAuth']);
 });
+
 
 Route::get('/orders', [OrderController::class, 'index'])->name('orders');
 Route::post('/orders/store/{id}', [OrderController::class, 'store'])->name('order.product');
@@ -34,6 +39,7 @@ Route::post('/orders/update/{order}', [OrderController::class, 'update'])->name(
 
 Route::get('/user-orders/{id}', [OrderController::class, 'orderByUser'])->name('order.user');
 Route::post('/user-orders/update/{order}', [OrderController::class, 'updateStatus'])->name('order.user.update');
+
 
 Route::apiResource('products', ProductController::class);
 Route::apiResource('posts', PostController::class);
