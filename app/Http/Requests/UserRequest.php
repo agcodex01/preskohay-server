@@ -22,7 +22,7 @@ class UserRequest extends FormRequest
      * @return array<string, mixed>
      */
     public function rules()
-    {
+    { 
         $userId = $this->user ? $this->user->id : '';
         $rules = [
             'first_name' => 'required',
@@ -32,8 +32,9 @@ class UserRequest extends FormRequest
             'birthdate' => 'required',
             'password' => 'required|min:8',
             'address' => 'required',
-            'user_role' => 'required',
-            'contact_number' => 'required|regex:/(01)[0-9]{9}/'
+            'user_role' => 'required|in:admin,user,farmer,driver',
+            'contact_number' => 'required',
+            'profile_image' => 'image',
         ];
 
         if ($userId) {
