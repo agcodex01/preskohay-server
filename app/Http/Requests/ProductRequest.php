@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProductRequest extends FormRequest
@@ -23,8 +24,9 @@ class ProductRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'name'              => 'required|unique:products',
+        $req = Request::route();
+        $response = [
+            'name'              => 'required',
             'unit'              => 'required',
             'image'             => 'required',
             'stocks'            => 'required|numeric',
@@ -32,5 +34,11 @@ class ProductRequest extends FormRequest
             'description'       => 'required',
             'price_per_unit'    => 'required|numeric'
         ];
+        if ($req->action['as'] == 'products.store') {
+            $response['name'] = 'required|unique:products';
+        }
+
+        return $response;
+
     }
 }
