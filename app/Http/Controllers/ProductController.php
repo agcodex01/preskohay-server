@@ -17,6 +17,10 @@ class ProductController extends Controller
         return Product::orderBy('created_at', 'DESC')->get();
     }
 
+    public function availableProductsToPost()
+    {
+        return Product::where('post_id', NULL)->orderBy('created_at', 'DESC')->get();
+    }
     /**
      * Store a newly created resource in storage.
      *

@@ -43,5 +43,7 @@ Route::post('/user-orders/update/{order}', [OrderController::class, 'updateStatu
 
 Route::apiResource('products', ProductController::class);
 Route::apiResource('posts', PostController::class);
+Route::get('/available-products', [ProductController::class, 'availableProductsToPost'])->name('products.to.posts');
 Route::post('/post/product/{post}', [PostController::class, 'storeByProducts'])->name('post.products');
 Route::post('/product/post/{post}', [PostController::class, 'productToPost'])->name('product.post');
+Route::delete('/post/product/{post}/{product}', [PostController::class, 'removeProduct'])->name('post.remove.product');

@@ -15,6 +15,7 @@ class Product extends Model
         'unit',
         'image',
         'stocks',
+        'post_id',
         'category',
         'description',
         'price_per_unit'
