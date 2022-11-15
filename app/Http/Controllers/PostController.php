@@ -19,7 +19,11 @@ class PostController extends Controller
      */
     public function index()
     {
-        return Post::with('user')->with('products')->orderBy('created_at', 'DESC')->get();
+        return Post::where('status', config('const.post_status.pending'))
+            ->with('user')
+            ->with('products')
+            ->orderBy('created_at', 'DESC')
+            ->get();
     }
 
 

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('title');
             $table->longText('description');
             $table->longtext('image');
+            $table->integer('status')->default(1);
             $table->timestamps();
             $table->softDeletes();
         });
