@@ -92,7 +92,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return $post->with('products')->get();
+        return $post;
     }
 
     /**

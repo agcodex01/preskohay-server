@@ -2,7 +2,7 @@
 
 return [
     'post_status' => [
-        'pernding' => 1,
+        'pending' => 1,
         'done' => 2,
     ]
 ];
