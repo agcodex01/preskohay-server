@@ -32,7 +32,8 @@ class ProductRequest extends FormRequest
             'stocks'            => 'required|numeric',
             'category'          => 'required',
             'description'       => 'required',
-            'price_per_unit'    => 'required|numeric'
+            'price_per_unit'    => 'required|numeric',
+            'estimated_harvest_date' => 'required',
         ];
         if ($req->action['as'] == 'products.store') {
             $response['name'] = 'required|unique:products';

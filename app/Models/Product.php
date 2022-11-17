@@ -15,9 +15,11 @@ class Product extends Model
         'unit',
         'image',
         'stocks',
+        'post_id',
         'category',
         'description',
-        'price_per_unit'
+        'price_per_unit',
+        'estimated_harvest_date'
     ];
 
     public function orders()

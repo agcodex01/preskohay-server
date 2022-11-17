@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('category');
             $table->float('price_per_unit');
             $table->string('unit');
+            $table->date('estimated_harvest_date');
             $table->longText('description')->nullable();
             $table->float('stocks');
             $table->timestamps();

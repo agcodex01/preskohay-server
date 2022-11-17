@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
 use App\Http\Requests\ProductRequest;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -17,8 +19,13 @@ class PostController extends Controller
      */
     public function index()
     {
-        return Post::with('user')->get();
+        return Post::where('status', config('const.post_status.pending'))
+            ->with('user')
+            ->with('products')
+            ->orderBy('created_at', 'DESC')
+            ->get();
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -29,16 +36,7 @@ class PostController extends Controller
     public function store(PostRequest $request)
     {
         $user = Auth::user();
-        
-        $params = $request->validated();
-
-        $params['image'] = base64_encode(
-            file_get_contents(
-                $request->file('image')->path()
-            )
-        );
-
-        $user->posts()->create($params);
+        $user->posts()->create($request->validated());
 
         return $user->posts;
     }
@@ -58,7 +56,7 @@ class PostController extends Controller
                 $request->file('image')->path()
             )
         );
-        
+
         $post->products()->create($params);
 
         return $user->posts()->with('products')->get();
@@ -74,15 +72,15 @@ class PostController extends Controller
     {
         $params = $request->validated();
 
-        foreach($params as $data) {
+        foreach($params['products'] as $data) {
             $product = Product::findOrFail($data['id']);
 
             $product->update([
-                'post_id' => $post->id
+                'post_id' => $post['id']
             ]);
         }
 
-        return $post()->with('products')->get();
+        return $post->with('products')->get();
     }
 
     /**
@@ -93,13 +91,6 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $post = $post
-            ->whereHas('products', function ($query) {
-                return $query->where('stocks', '>', 0);
-            })
-            ->with('products')
-            ->get();
-        
         return $post;
     }
 
@@ -112,15 +103,7 @@ class PostController extends Controller
      */
     public function update(PostRequest $request, Post $post)
     {
-        $params = $request->validated();
-
-        $params['image'] = base64_encode(
-            file_get_contents(
-                $request->file('image')->path()
-            )
-        );
-
-        $post->update($params);
+        $post->update($request->validated());
 
         return $post;
     }
@@ -134,5 +117,12 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         return $post->delete();
+    }
+
+    public function removeProduct(Post $post, Product $product)
+    {
+        return $post->products()->where('id', $product->id)->update([
+            'post_id' => null
+        ]);
     }
 }
