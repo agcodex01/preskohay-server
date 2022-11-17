@@ -21,8 +21,9 @@ class ChatController extends Controller
     public function sendMessage(Request $request)
     {
         $message = Message::create($request->all());
+        $user = $request->user();
 
-        broadcast(new MessageEvent($request->message))->toOthers();
+        broadcast(new MessageEvent($request->message, $user))->toOthers();
 
         return $message;
     }
