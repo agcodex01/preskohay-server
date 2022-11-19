@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\LoginController;
 
@@ -47,3 +48,7 @@ Route::get('/available-products', [ProductController::class, 'availableProductsT
 Route::post('/post/product/{post}', [PostController::class, 'storeByProducts'])->name('post.products');
 Route::post('/product/post/{post}', [PostController::class, 'productToPost'])->name('product.post');
 Route::delete('/post/product/{post}/{product}', [PostController::class, 'removeProduct'])->name('post.remove.product');
+
+Route::post('/drivers', [ApplicationController::class, 'store'])->name('register.driver');
+Route::post('/drivers/license', [ApplicationController::class, 'storeApplicationLicense'])->name('drivers.license');
+Route::post('/drivers/motor', [ApplicationController::class, 'storeApplicationMotor'])->name('drivers.motor');
