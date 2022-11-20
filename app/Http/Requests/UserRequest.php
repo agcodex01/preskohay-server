@@ -22,16 +22,16 @@ class UserRequest extends FormRequest
      * @return array<string, mixed>
      */
     public function rules()
-    { 
+    {
         $userId = $this->user ? $this->user->id : '';
         $rules = [
             'first_name' => 'required',
             'last_name' => 'required',
-            'email' => 'required|unique:users,email,'. $userId,
-            'age' => 'required',
-            'birthdate' => 'required',
+            'email' => 'required|unique:users,email,' . $userId,
+            'age' => 'sometimes',
+            'birthdate' => 'sometimes',
             'password' => 'required|min:8',
-            'address' => 'required',
+            'address' => 'sometimes',
             'user_role' => 'required|in:admin,user,farmer,driver',
             'contact_number' => 'required',
             'profile_image' => 'image',
