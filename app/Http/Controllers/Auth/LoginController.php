@@ -17,7 +17,10 @@ class LoginController extends Controller
             if (Hash::check($request->password, $user->password)) {
                 $token = $user->createToken('authentication_token');
 
-                return ['token' => $token->plainTextToken];
+                return [
+                    'token' => $token->plainTextToken,
+                    'user' => $user
+                ];
             }
         }
         return [

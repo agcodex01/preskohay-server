@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Message;
+use App\Models\Contact;
 
 class User extends Authenticatable
 {
@@ -69,5 +70,35 @@ class User extends Authenticatable
     public function messagesReceived()
     {
         return $this->hasMany(Message::class, 'receiver_id');
+    }
+
+    public function contacts() {
+        return $this->hasMany(Contact::class, 'sender_id');
+    }
+
+    /**=========================================
+     * METHODS
+     *==========================================/
+
+    /**
+     * Check if user has made conversation 
+     */
+
+    public function isHaveMadeConvo($receiver_id, $sender_id = null)
+    {
+        $sender_id = $sender_id ? $sender_id : $this->id;
+
+        $messages = User::where('id', $sender_id)->with(
+            [
+                'messagesSend' => function ($q) use ($receiver_id, $sender_id) {
+                    return $q->whereIn('receiver_id', [$receiver_id, $sender_id]);
+                },
+                'messagesReceived' => function ($q) use ($receiver_id, $sender_id) {
+                    return $q->whereIn('sender_id', [$receiver_id, $sender_id]);
+                }
+            ]
+        )->first();
+
+        return count($messages['messagesSend']) > 0 && count($messages['messagesReceived']) > 0;
     }
 }
