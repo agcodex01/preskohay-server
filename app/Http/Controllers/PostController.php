@@ -20,8 +20,7 @@ class PostController extends Controller
     public function index()
     {
         return Post::where('status', config('const.post_status.pending'))
-            ->with('user')
-            ->with('products')
+            ->with('user', 'products')
             ->orderBy('created_at', 'DESC')
             ->get();
     }
@@ -36,6 +35,7 @@ class PostController extends Controller
     public function store(PostRequest $request)
     {
         $user = Auth::user();
+        // $user = User::first();
         $user->posts()->create($request->validated());
 
         return $user->posts;
@@ -91,7 +91,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return $post;
+        return $post->load('user', 'products');
     }
 
     /**

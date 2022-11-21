@@ -29,8 +29,11 @@ class UserRequest extends FormRequest
         $rules = [
             'first_name' => 'required',
             'last_name' => 'required',
-            'email' => 'required|unique:users,email,'. $userId,
+            'email' => 'required|unique:users,email,' . $userId,
+            'age' => 'sometimes',
+            'birthdate' => 'sometimes',
             'password' => 'required|min:8',
+            'address' => 'sometimes',
             'user_role' => 'required|in:admin,user,farmer,driver',
             'contact_number' => 'required',
         ];
