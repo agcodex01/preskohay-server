@@ -6,25 +6,22 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\ApplicationRequest;
+use Illuminate\Support\Facades\Session;
 
 class ApplicationController extends Controller
 {
-    protected $user;
-
-    public function store(UserRequest $request) 
+    public function store(UserRequest $request)
     {
-        $this->user = User::create($request->validated());
-
-        return $this->user;
+        return User::create($request->validated());
     }
 
-    public function storeApplicationLicense(ApplicationRequest $request)
+    public function storeApplicationLicense(ApplicationRequest $request, User $user)
     {
-        return $this->user->application()->create($request->validated());
+        return $user->application()->create($request->validated());
     }
 
-    public function storeApplicationMotor(ApplicationRequest $request)
+    public function storeApplicationMotor(ApplicationRequest $request, User $user)
     {
-        return $this->user->application()->update($request->validated());
+        return $user->application()->update($request->validated());
     }
 }

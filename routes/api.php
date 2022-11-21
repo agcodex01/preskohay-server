@@ -24,6 +24,10 @@ use App\Http\Controllers\Auth\LoginController;
 Route::post('/login', [LoginController::class, 'login'])->name('user.login');
 Route::post('/user/register', [UserController::class, 'store'])->name('customers.register');
 
+Route::post('/drivers', [ApplicationController::class, 'store'])->name('register.driver');
+Route::post('/drivers/license/{user}', [ApplicationController::class, 'storeApplicationLicense'])->name('drivers.license');
+Route::put('/drivers/motor/{user}', [ApplicationController::class, 'storeApplicationMotor'])->name('drivers.motor');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class)->except(['store']);
     Route::post('/logout', [LoginController::class, 'logout'])->name('user.logout');
@@ -49,6 +53,4 @@ Route::post('/post/product/{post}', [PostController::class, 'storeByProducts'])-
 Route::post('/product/post/{post}', [PostController::class, 'productToPost'])->name('product.post');
 Route::delete('/post/product/{post}/{product}', [PostController::class, 'removeProduct'])->name('post.remove.product');
 
-Route::post('/drivers', [ApplicationController::class, 'store'])->name('register.driver');
-Route::post('/drivers/license', [ApplicationController::class, 'storeApplicationLicense'])->name('drivers.license');
-Route::post('/drivers/motor', [ApplicationController::class, 'storeApplicationMotor'])->name('drivers.motor');
+

@@ -25,14 +25,14 @@ class ApplicationRequest extends FormRequest
     public function rules()
     {
         $req = Request::route();
-        $response = [
-            'license_img' => 'required'
-        ];
-        
         if ($req->action['as'] == 'drivers.motor') {
-            $response['motor_img'] = 'required';
+            return [
+                'motor_img' => 'required'
+            ];
+        } else {
+            return [
+                'license_img' => 'required'
+            ];
         }
-
-        return $response;
     }
 }
