@@ -14,9 +14,13 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Product::all();
+        return Product::orderBy('created_at', 'DESC')->get();
     }
 
+    public function availableProductsToPost()
+    {
+        return Product::where('post_id', NULL)->orderBy('created_at', 'DESC')->get();
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -25,15 +29,7 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        $params = $request->validated();
-
-        $params['image'] = base64_encode(
-            file_get_contents(
-                $request->file('image')->path()
-            )
-        );
-
-        $product = Product::create($params);
+        $product = Product::create($request->validated());
 
         return $product;
     }
@@ -58,15 +54,7 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, Product $product)
     {
-        $params = $request->validated();
-
-        $params['image'] = base64_encode(
-            file_get_contents(
-                $request->file('image')->path()
-            )
-        );
-        
-        $product->update($params);
+        $product->update($request->validated());
 
         return $product;
     }
