@@ -72,6 +72,11 @@ class User extends Authenticatable
         return $this->hasMany(Message::class, 'receiver_id');
     }
 
+    public function application()
+    {
+        return $this->hasOne(Application::class);
+    }
+
     public function contacts() {
         return $this->hasMany(Contact::class, 'sender_id');
     }
@@ -81,7 +86,7 @@ class User extends Authenticatable
      *==========================================/
 
     /**
-     * Check if user has made conversation 
+     * Check if user has made conversation
      */
 
     public function isHaveMadeConvo($receiver_id, $sender_id = null)
