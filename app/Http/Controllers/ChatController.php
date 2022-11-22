@@ -31,7 +31,7 @@ class ChatController extends Controller
             Contact::create($request->all());
         }
 
-        broadcast(new MessageEvent($request->message, $user))->toOthers();
+        broadcast(new MessageEvent($message))->toOthers();
 
         return $message;
     }
