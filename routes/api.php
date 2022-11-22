@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +23,7 @@ use App\Http\Controllers\Auth\LoginController;
 */
 
 Route::post('/login', [LoginController::class, 'login'])->name('user.login');
-Route::post('/user/register', [UserController::class, 'store'])->name('customers.register');
+Route::post('/user/register', [RegisterController::class, 'execute'])->name('customers.register');
 
 Route::post('/drivers', [ApplicationController::class, 'store'])->name('register.driver');
 Route::post('/drivers/license/{user}', [ApplicationController::class, 'storeApplicationLicense'])->name('drivers.license');
@@ -31,9 +32,25 @@ Route::put('/drivers/motor/{user}', [ApplicationController::class, 'storeApplica
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class)->except(['store']);
     Route::post('/logout', [LoginController::class, 'logout'])->name('user.logout');
-    Route::post('/messages/{receiver_id}', [ChatController::class, 'fetchMessages']);
+    Route::get('/messages/{receiver_id}', [ChatController::class, 'fetchMessages']);
     Route::post('/message', [ChatController::class, 'sendMessage']);
+    Route::get('/contact/list', [ChatController::class, 'getContactList']);
     Route::post('/pusher/auth', [ChatController::class, 'postAuth']);
+
+    Route::apiResource('products', ProductController::class);
+    Route::apiResource('posts', PostController::class);
+    Route::get('/available-products', [ProductController::class, 'availableProductsToPost'])->name('products.to.posts');
+    Route::post('/post/product/{post}', [PostController::class, 'storeByProducts'])->name('post.products');
+    Route::post('/product/post/{post}', [PostController::class, 'productToPost'])->name('product.post');
+    Route::delete('/post/product/{post}/{product}', [PostController::class, 'removeProduct'])->name('post.remove.product');
+
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders');
+    Route::post('/orders/store/{id}', [OrderController::class, 'store'])->name('order.product');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('order.show');
+    Route::post('/orders/update/{order}', [OrderController::class, 'update'])->name('order.product.update');
+
+    Route::get('/user-orders/{id}', [OrderController::class, 'orderByUser'])->name('order.user');
+    Route::post('/user-orders/update/{order}', [OrderController::class, 'updateStatus'])->name('order.user.update');
 });
 
 
