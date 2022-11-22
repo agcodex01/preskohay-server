@@ -33,7 +33,7 @@ class MessageEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('live-chat');
+        return new PrivateChannel('App.Models.User.'.$this->message->receiver_id);
     }
 
     public function broadcastAs()
