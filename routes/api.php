@@ -34,7 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $user = auth()->user();
         return [
             'user' => $user,
-            'token' => $user->currentAccessToken()
+            'token' => $user->currentAccessToken()->plainTextToken
         ];
     });
     Route::apiResource('users', UserController::class)->except(['store']);
@@ -58,23 +58,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/user-orders/{id}', [OrderController::class, 'orderByUser'])->name('order.user');
     Route::post('/user-orders/update/{order}', [OrderController::class, 'updateStatus'])->name('order.user.update');
+
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders');
+    Route::post('/orders/store/{id}', [OrderController::class, 'store'])->name('order.product');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('order.show');
+    Route::post('/orders/update/{order}', [OrderController::class, 'update'])->name('order.product.update');
+
+    Route::get('/user-orders/{id}', [OrderController::class, 'orderByUser'])->name('order.user');
+    Route::post('/user-orders/update/{order}', [OrderController::class, 'updateStatus'])->name('order.user.update');
+
+
+    Route::apiResource('products', ProductController::class);
+    Route::apiResource('posts', PostController::class);
+    Route::get('/available-products', [ProductController::class, 'availableProductsToPost'])->name('products.to.posts');
+    Route::post('/post/product/{post}', [PostController::class, 'storeByProducts'])->name('post.products');
+    Route::post('/product/post/{post}', [PostController::class, 'productToPost'])->name('product.post');
+    Route::delete('/post/product/{post}/{product}', [PostController::class, 'removeProduct'])->name('post.remove.product');
 });
-
-
-Route::get('/orders', [OrderController::class, 'index'])->name('orders');
-Route::post('/orders/store/{id}', [OrderController::class, 'store'])->name('order.product');
-Route::get('/orders/{order}', [OrderController::class, 'show'])->name('order.show');
-Route::post('/orders/update/{order}', [OrderController::class, 'update'])->name('order.product.update');
-
-Route::get('/user-orders/{id}', [OrderController::class, 'orderByUser'])->name('order.user');
-Route::post('/user-orders/update/{order}', [OrderController::class, 'updateStatus'])->name('order.user.update');
-
-
-Route::apiResource('products', ProductController::class);
-Route::apiResource('posts', PostController::class);
-Route::get('/available-products', [ProductController::class, 'availableProductsToPost'])->name('products.to.posts');
-Route::post('/post/product/{post}', [PostController::class, 'storeByProducts'])->name('post.products');
-Route::post('/product/post/{post}', [PostController::class, 'productToPost'])->name('product.post');
-Route::delete('/post/product/{post}/{product}', [PostController::class, 'removeProduct'])->name('post.remove.product');
-
-
