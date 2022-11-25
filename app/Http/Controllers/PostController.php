@@ -59,7 +59,7 @@ class PostController extends Controller
 
         return $posts->sortByDesc(function ($post) {
             return $post->total_search_product;
-        });
+        })->values()->all();
     }
 
     /**
