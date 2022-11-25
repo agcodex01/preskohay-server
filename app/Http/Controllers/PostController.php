@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
+use App\Models\RecentSearch;
 use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
@@ -25,6 +26,41 @@ class PostController extends Controller
             ->get();
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function newsFeed()
+    {
+        $user = Auth::user();
+
+        $searches = RecentSearch::selectRaw('search, count(search) as total')
+            ->where('user_id', $user->id)
+            ->groupBy('search')
+            ->get()
+            ->sortByDesc('search')
+            ->values()
+            ->all();
+
+        $posts = Post::where('status', config('const.post_status.pending'))
+            ->with('products','user')
+            ->get();
+
+        foreach($posts as $post) {
+            foreach($post->products as $product) {
+                foreach($searches as $data) {
+                    if ($product->name == $data->search) {
+                        $post['total_search_product'] += $data->total;
+                    }
+                }
+            }
+        }
+
+        return $posts->sortByDesc(function ($post) {
+            return $post->total_search_product;
+        })->values()->all();
+    }
 
     /**
      * Store a newly created resource in storage.

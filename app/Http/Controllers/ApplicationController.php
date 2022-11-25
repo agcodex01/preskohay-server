@@ -6,13 +6,16 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\ApplicationRequest;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 class ApplicationController extends Controller
 {
     public function store(UserRequest $request)
     {
-        return User::create($request->validated());
+        $params = $request->validated();
+        $params['password'] = Hash::make($params['password']);
+        return User::create($params);
     }
 
     public function storeApplicationLicense(ApplicationRequest $request, User $user)
