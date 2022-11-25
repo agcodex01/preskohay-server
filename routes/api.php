@@ -10,6 +10,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\RecentSearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,3 +72,5 @@ Route::post('/product/post/{post}', [PostController::class, 'productToPost'])->n
 Route::delete('/post/product/{post}/{product}', [PostController::class, 'removeProduct'])->name('post.remove.product');
 
 
+Route::get('/newsfeed', [PostController::class, 'newsFeed'])->name('post.newsfeed');
+Route::post('/newsfeed/search', [RecentSearchController::class, 'store'])->name('post.search');

@@ -81,6 +81,11 @@ class User extends Authenticatable
         return $this->hasMany(Contact::class, 'sender_id');
     }
 
+    public function searches()
+    {
+        return $this->hasMany(RecentSearch::class);
+    }
+
     /**=========================================
      * METHODS
      *==========================================/
