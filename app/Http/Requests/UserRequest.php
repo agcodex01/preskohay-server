@@ -35,7 +35,7 @@ class UserRequest extends FormRequest
             'password' => 'required|min:8',
             'address' => 'sometimes',
             'user_role' => 'required|in:admin,user,farmer,driver',
-            'contact_number' => 'required',
+            'contact_number' => 'required|regex:/(63)[0-9]{10}/',
         ];
 
         if ($req->action['as'] != 'register.driver') {
