@@ -39,10 +39,10 @@ class UserRequest extends FormRequest
         ];
 
         if ($req->action['as'] != 'register.driver') {
-            $rules['age']           = 'required';
-            $rules['address']       = 'required';
-            $rules['birthdate']     = 'required';
-            $rules['profile_image'] = 'image';
+            $rules['age']           = 'sometimes';
+            $rules['address']       = 'sometimes';
+            $rules['birthdate']     = 'sometimes';
+            $rules['profile_image'] = 'sometimes';
         }
 
         if ($userId) {
