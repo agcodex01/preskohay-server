@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\ApplicationRequest;
-use App\Http\Services\SmsService;
+use App\Http\Implementations\SmsImplement;
 use Illuminate\Support\Facades\Hash;
 
 class ApplicationController extends Controller
 {
-    public function __construct(private SmsService $smsService)
+    public function __construct(private SmsImplement $smsService)
     {
 
     }
@@ -32,10 +32,12 @@ class ApplicationController extends Controller
 
     public function confirm(User $user)
     {
-        $this->smsService
+        $test = $this->smsService
             ->to($user->contact_number)
             ->message('Your application already confirmed!')
             ->send();
+
+        return $test;
 
         return $user->update([
             'status' => 'on_progress'
