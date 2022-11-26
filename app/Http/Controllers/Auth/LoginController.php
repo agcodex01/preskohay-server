@@ -17,6 +17,14 @@ class LoginController extends Controller
 
         if ($user && Hash::check($request->password, $user->password)) {
 
+            if ($user->user_role == 'driver' && $user->status != 'done') {
+                return response([
+                    'errors' => [
+                        'email' => ['Invalid credentials.']
+                    ]
+                ], 422);
+            }
+
             return [
                 'user', $user,
                 'token' => $user->createToken('mobile_app')->plainTextToken
