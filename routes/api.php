@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $user = auth()->user();
         return [
             'user' => $user,
-            'token' => $user->currentAccessToken()->plainTextToken
+            'token' => null,
         ];
     });
     Route::apiResource('users', UserController::class)->except(['store']);

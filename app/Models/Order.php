@@ -13,7 +13,8 @@ class Order extends Model
     protected $fillable = [
         'total',
         'status',
-        'shipping_fee'
+        'shipping_fee',
+        'driver_id'
     ];
 
     public function products()
@@ -28,5 +29,10 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function driver()
+    {
+        return $this->hasOne(User::class, 'driver_id', 'id');
     }
 }

@@ -18,7 +18,7 @@ class LoginController extends Controller
         if ($user && Hash::check($request->password, $user->password)) {
 
             return [
-                'user', $user,
+                'user' => $user,
                 'token' => $user->createToken('mobile_app')->plainTextToken
             ];
         }
