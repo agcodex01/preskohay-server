@@ -18,6 +18,7 @@ class ApplicationController extends Controller
     {
         return User::selectRaw('status, count(status) as total')
             ->where('user_role', 'driver')
+            ->whereHas('application')
             ->groupBy('status')
             ->get();
     }
@@ -25,6 +26,7 @@ class ApplicationController extends Controller
     public function list()
     {
         return User::where('user_role', 'driver')
+            ->whereHas('application')
             ->with('application')
             ->orderBy('updated_at', 'DESC')
             ->get();
@@ -32,16 +34,24 @@ class ApplicationController extends Controller
 
     public function confirm(User $user)
     {
-        $test = $this->smsService
-            ->to($user->contact_number)
-            ->message('Your application already confirmed!')
-            ->send();
+        try {
+            // Note: user number must start to 63
+            $message = $this->smsService
+                ->to($user->contact_number)
+                ->message('Your application is already confirmed, you can now login to Preskohay app.')
+                ->send();
 
-        return $test;
-
-        return $user->update([
-            'status' => 'on_progress'
-        ]);
+            if ($message->getStatus() == 0) {
+                $user->update([
+                    'status' => 'in_progress'
+                ]);
+                return 'ALready confirmed';
+            } else {
+                return $message->getStatus();
+            }
+        } catch (\Exception $th) {
+            return $th;
+        }
     }
 
     public function done(User $user)
@@ -51,10 +61,19 @@ class ApplicationController extends Controller
         ]);
     }
 
+    public function decline(User $user)
+    {
+        return $user->update([
+            'status' => 'declined'
+        ]);
+    }
+
     public function store(UserRequest $request)
     {
         $params = $request->validated();
+
         $params['password'] = Hash::make($params['password']);
+
         return User::create($params);
     }
 
