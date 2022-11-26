@@ -10,6 +10,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\RecentSearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +76,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/product/post/{post}', [PostController::class, 'productToPost'])->name('product.post');
     Route::delete('/post/product/{post}/{product}', [PostController::class, 'removeProduct'])->name('post.remove.product');
 
+    Route::get('/applications', [ApplicationController::class, 'index'])->name('applications');
+    Route::get('/applications/list', [ApplicationController::class, 'list'])->name('applications.list');
+    Route::post('/applications/confirm/{user}', [ApplicationController::class, 'confirm'])->name('applications.confirm');
+    Route::post('/applications/done/{user}', [ApplicationController::class, 'done'])->name('applications.done');
+    Route::post('/applications/declined/{user}', [ApplicationController::class, 'decline'])->name('application.declined');
+
     Route::get('/newsfeed', [PostController::class, 'newsFeed'])->name('post.newsfeed');
     Route::post('/newsfeed/search', [RecentSearchController::class, 'store'])->name('post.search');
 });
+

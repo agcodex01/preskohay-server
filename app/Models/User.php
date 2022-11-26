@@ -29,6 +29,7 @@ class User extends Authenticatable
         'last_name',
         'password',
         'address',
+        'status',
         'email',
         'age',
     ];
@@ -79,6 +80,11 @@ class User extends Authenticatable
 
     public function contacts() {
         return $this->hasMany(Contact::class, 'sender_id');
+    }
+
+    public function searches()
+    {
+        return $this->hasMany(RecentSearch::class);
     }
 
     /**=========================================
