@@ -36,16 +36,18 @@ class SmsImplement implements SmsService
 
     public function send()
     {
-        $response = $this->http->post('api.php',[
-            'form_params' => [
-                '1' => $this->to,
-                '2' => $this->message,
-                '3' => config('sms.api_code'),
-                'passwd' => config('sms.password'),
-            ]
-        ]);
+        $basic = new \Vonage\Client\Credentials\Basic(config('sms.nexmo_key'), config('sms.nexmo_secret'));
+        $client = new \Vonage\Client($basic);
 
-        $this->result = $response;
+        $response = $client->sms()->send(
+            new \Vonage\SMS\Message\SMS(
+                $this->to,
+                'Preskohay',
+                $this->message
+                )
+        );
+
+        $this->result = $response->current();
 
         return $this->result;
     }
