@@ -28,7 +28,7 @@ class OrderController extends Controller
     {
         $user = User::findOrFail($id);
 
-        return $user->orders()->with('products')->get();
+        return $user->orders()->with('products')->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -48,15 +48,15 @@ class OrderController extends Controller
 
         $order = $user->orders()->latest()->first();
 
-        foreach($params as $data) {
+        foreach($params['products'] as $data) {
             $order->products()
                 ->syncWithoutDetaching([
-                    $data['product_id'] => [
+                    $data['id'] => [
                         'quantity' => $data['quantity'],
-                        'subtotal' => $data['subtotal'],
+                        'subtotal' => $data['sub_total'],
                     ]
                 ]);
-            $total += $data['subtotal'];
+            $total += $data['sub_total'];
         }
 
         $order->update([

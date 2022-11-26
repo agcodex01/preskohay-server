@@ -21,17 +21,21 @@ class ChatController extends Controller
 
     public function sendMessage(Request $request)
     {
-        
+
         $message = Message::create($request->all());
         $user = $request->user();
 
-        if ($user->isHaveMadeConvo($request->receiver_id, $request->sender_id) 
+        if ($user->isHaveMadeConvo($request->receiver_id, $request->sender_id)
             && !Contact::isAlreadyExist($request->receiver_id, $request->sender_id))
         {
             Contact::create($request->all());
         }
 
-        broadcast(new MessageEvent($message))->toOthers();
+        try {
+            broadcast(new MessageEvent($message))->toOthers();
+        } catch (\Exception $e) {
+            return $e;
+        }
 
         return $message;
     }
@@ -39,7 +43,7 @@ class ChatController extends Controller
     public function getContactList(Request $request)
     {
         $contacts = $request->user()->contacts;
-        
+
         return $contacts->map(function ($contact) {
             $contact->receiverUser;
             return $contact;
