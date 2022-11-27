@@ -16,7 +16,8 @@ class Order extends Model
         'status',
         'shipping_fee',
         'driver_id',
-        'drop_off'
+        'drop_off',
+        'farmer_id'
     ];
 
     public function products()
@@ -36,5 +37,10 @@ class Order extends Model
     public function driver()
     {
         return $this->hasOne(User::class, 'id', 'driver_id');
+    }
+
+    public function farmer()
+    {
+        return $this->belongsTo(User::class, 'farmer_id', 'id');
     }
 }

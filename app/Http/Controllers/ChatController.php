@@ -36,7 +36,8 @@ class ChatController extends Controller
         }
 
         try {
-            broadcast(new MessageEvent($message))->toOthers();
+            // broadcast(new MessageEvent($message))->toOthers();
+            event(new MessageEvent($message));
         } catch (\Exception $e) {
             return $e;
         }
