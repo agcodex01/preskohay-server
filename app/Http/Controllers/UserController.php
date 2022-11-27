@@ -54,4 +54,9 @@ class UserController extends Controller
     {
         return $user->delete();
     }
+
+    public function getUserById(User $user)
+    {
+        return $user;
+    }
 }

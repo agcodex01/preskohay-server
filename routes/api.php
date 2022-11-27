@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ];
     });
     Route::apiResource('users', UserController::class)->except(['store']);
+    Route::get('/user/receiver/{user}', [UserController::class, 'getUserById']);
     Route::post('/logout', [LoginController::class, 'logout'])->name('user.logout');
     Route::get('/messages/{receiver_id}', [ChatController::class, 'fetchMessages']);
     Route::post('/message', [ChatController::class, 'sendMessage']);
