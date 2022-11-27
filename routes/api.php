@@ -11,6 +11,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\RecentSearchController;
+use App\Http\Controllers\OrganizationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $user = auth()->user();
         return [
             'user' => $user,
-            'token' => $user->currentAccessToken()->plainTextToken
+            'token' => null,
         ];
     });
     Route::apiResource('users', UserController::class)->except(['store']);
@@ -61,15 +62,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user-orders/{id}', [OrderController::class, 'orderByUser'])->name('order.user');
     Route::post('/user-orders/update/{order}', [OrderController::class, 'updateStatus'])->name('order.user.update');
 
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders');
-    Route::post('/orders/store/{id}', [OrderController::class, 'store'])->name('order.product');
-    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('order.show');
-    Route::post('/orders/update/{order}', [OrderController::class, 'update'])->name('order.product.update');
-
-    Route::get('/user-orders/{id}', [OrderController::class, 'orderByUser'])->name('order.user');
-    Route::post('/user-orders/update/{order}', [OrderController::class, 'updateStatus'])->name('order.user.update');
-
-
     Route::apiResource('products', ProductController::class);
     Route::apiResource('posts', PostController::class);
     Route::get('/available-products', [ProductController::class, 'availableProductsToPost'])->name('products.to.posts');
@@ -85,5 +77,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/newsfeed', [PostController::class, 'newsFeed'])->name('post.newsfeed');
     Route::post('/newsfeed/search', [RecentSearchController::class, 'store'])->name('post.search');
+
+    Route::apiResource('organizations', OrganizationController::class);
+
+    Route::post('/update/password', [UserController::class, 'updatePassword'])->name('update.password');
 });
+
 

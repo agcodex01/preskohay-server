@@ -18,7 +18,10 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->float('total')->default(0);
             $table->integer('status')->default(0);
-            $table->float('shipping_fee')->default(30);
+            $table->string('drop_off')->nullable();
+            $table->unsignedBigInteger('driver_id')->nullable();
+            $table->unsignedBigInteger('farmer_id')->nullable();
+            $table->float('shipping_fee')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

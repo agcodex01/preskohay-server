@@ -41,7 +41,7 @@ class ApplicationController extends Controller
 
             $message = $this->smsService
                 ->to($number)
-                ->message('Your application is already confirmed, you can now login to Preskohay app.')
+                ->message('Your application is already confirmed.')
                 ->send();
 
             if ($message->getStatus() == 0) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\OrderFilter;
 use App\Models\User;
 use App\Models\Order;
 use App\Http\Requests\OrderRequest;
@@ -14,9 +15,9 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(OrderFilter $filter)
     {
-        return Order::all();
+        return Order::filter($filter)->with('user', 'driver', 'products', 'farmer', 'user')->get();
     }
 
     /**
@@ -28,7 +29,7 @@ class OrderController extends Controller
     {
         $user = User::findOrFail($id);
 
-        return $user->orders()->with('products')->orderBy('created_at', 'desc')->get();
+        return $user->orders()->with('products', 'farmer', 'user')->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -44,7 +45,10 @@ class OrderController extends Controller
 
         $params = $request->validated();
 
-        $user->orders()->create();
+        $user->orders()->create([
+            'farmer_id' => $request->farmer_id,
+            'drop_off' => $request->drop_off
+        ]);
 
         $order = $user->orders()->latest()->first();
 

@@ -19,11 +19,17 @@ class Product extends Model
         'category',
         'description',
         'price_per_unit',
-        'estimated_harvest_date'
+        'estimated_harvest_date',
+        'user_id'
     ];
 
     public function orders()
     {
         return $this->belongsToMany(Order::class);
+    }
+
+    public function post()
+    {
+
     }
 }

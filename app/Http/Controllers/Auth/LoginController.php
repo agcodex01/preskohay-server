@@ -26,7 +26,7 @@ class LoginController extends Controller
             }
 
             return [
-                'user', $user,
+                'user' => $user,
                 'token' => $user->createToken('mobile_app')->plainTextToken
             ];
         }
