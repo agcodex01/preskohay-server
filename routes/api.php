@@ -36,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
         $user = auth()->user();
         return [
             'user' => $user,
-            'token' => $user->currentAccessToken()->plainTextToken
+            'token' => null,
         ];
     });
     Route::apiResource('users', UserController::class)->except(['store']);
@@ -82,10 +82,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/applications/confirm/{user}', [ApplicationController::class, 'confirm'])->name('applications.confirm');
     Route::post('/applications/done/{user}', [ApplicationController::class, 'done'])->name('applications.done');
     Route::post('/applications/declined/{user}', [ApplicationController::class, 'decline'])->name('application.declined');
-    
+
     Route::get('/newsfeed', [PostController::class, 'newsFeed'])->name('post.newsfeed');
     Route::post('/newsfeed/search', [RecentSearchController::class, 'store'])->name('post.search');
-    
+
     Route::apiResource('organizations', OrganizationController::class);
 
     Route::post('/update/password', [UserController::class, 'updatePassword'])->name('update.password');

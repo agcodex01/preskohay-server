@@ -28,6 +28,8 @@ class OrderRequest extends FormRequest
         switch ($req->action['as']) {
             case 'order.product':
                 return [
+                    'farmer_id' => 'required',
+                    'drop_off' => 'required',
                     'products'            => 'required|array',
                     'products.*.id'       => 'required|exists:products,id',
                     'products.*.quantity' => 'required|numeric',

@@ -44,6 +44,13 @@ class UserRequest extends FormRequest
             'contact_number' => 'required|regex:/(09)[0-9]{9}/|max:11',
         ];
 
+        if ($req->action['as'] != 'register.driver') {
+            $rules['age']           = 'sometimes';
+            $rules['address']       = 'sometimes';
+            $rules['birthdate']     = 'sometimes';
+            $rules['profile_image'] = 'sometimes';
+        }
+
         if ($userId) {
             unset($rules['password']);
         }
