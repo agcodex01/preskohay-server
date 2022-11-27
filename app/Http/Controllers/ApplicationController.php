@@ -40,7 +40,7 @@ class ApplicationController extends Controller
             $number = '63'.$end_number;
 
             $message = $this->smsService
-                ->to($user->contact_number)
+                ->to($number)
                 ->message('Your application is already confirmed.')
                 ->send();
 
