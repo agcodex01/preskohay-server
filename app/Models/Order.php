@@ -2,19 +2,21 @@
 
 namespace App\Models;
 
+use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Filterable;
 
     protected $fillable = [
         'total',
         'status',
         'shipping_fee',
-        'driver_id'
+        'driver_id',
+        'drop_off'
     ];
 
     public function products()
@@ -33,6 +35,6 @@ class Order extends Model
 
     public function driver()
     {
-        return $this->hasOne(User::class, 'driver_id', 'id');
+        return $this->hasOne(User::class, 'id', 'driver_id');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\OrderFilter;
 use App\Models\User;
 use App\Models\Order;
 use App\Http\Requests\OrderRequest;
@@ -14,9 +15,9 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(OrderFilter $filter)
     {
-        return Order::all();
+        return Order::filter($filter)->with('user', 'driver')->whereNull('driver_id')->get();
     }
 
     /**
