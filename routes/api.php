@@ -87,6 +87,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/newsfeed/search', [RecentSearchController::class, 'store'])->name('post.search');
     
     Route::apiResource('organizations', OrganizationController::class);
+
+    Route::post('/update/password', [UserController::class, 'updatePassword'])->name('update.password');
 });
 
 
