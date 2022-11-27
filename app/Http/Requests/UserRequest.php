@@ -26,6 +26,9 @@ class UserRequest extends FormRequest
     {
         $req = Request::route();
         $userId = $this->user ? $this->user->id : '';
+        if ($req->action['as'] == 'organizations.update') {
+            $userId = $this->organization ? $this->organization->id : '';
+        }
         $rules = [
             'first_name' => 'required',
             'last_name' => 'required',
@@ -34,8 +37,9 @@ class UserRequest extends FormRequest
             'birthdate' => 'sometimes',
             'password' => 'required|min:8',
             'address' => 'sometimes',
+            'profile_image' => 'sometimes',
             'user_role' => 'required|in:admin,user,farmer,driver',
-            'contact_number' => 'required|regex:/(63)[0-9]{10}/',
+            'contact_number' => 'required|regex:/(09)[0-9]{9}/|max:11',
         ];
 
         if ($req->action['as'] != 'register.driver') {

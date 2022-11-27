@@ -36,9 +36,12 @@ class ApplicationController extends Controller
     {
         try {
             // Note: user number must start to 63
+            $end_number = substr($user->contact_number, 2, 11);
+            $number = '63'.$end_number;
+
             $message = $this->smsService
-                ->to($user->contact_number)
-                ->message('Your application is already confirmed, you can now proceed to the training program.')
+                ->to($number)
+                ->message('Your application is already confirmed.')
                 ->send();
 
             if ($message->getStatus() == 0) {

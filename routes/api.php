@@ -11,6 +11,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\RecentSearchController;
+use App\Http\Controllers\OrganizationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,8 +82,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/applications/confirm/{user}', [ApplicationController::class, 'confirm'])->name('applications.confirm');
     Route::post('/applications/done/{user}', [ApplicationController::class, 'done'])->name('applications.done');
     Route::post('/applications/declined/{user}', [ApplicationController::class, 'decline'])->name('application.declined');
-
+    
     Route::get('/newsfeed', [PostController::class, 'newsFeed'])->name('post.newsfeed');
     Route::post('/newsfeed/search', [RecentSearchController::class, 'store'])->name('post.search');
+    
+    Route::apiResource('organizations', OrganizationController::class);
 });
+
 
