@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Http\Requests\ProductRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -14,12 +15,16 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Product::orderBy('created_at', 'DESC')->get();
+        $user = Auth::user();
+
+        return Product::where('user_id', $user->id)->orderBy('created_at', 'DESC')->get();
     }
 
     public function availableProductsToPost()
     {
-        return Product::where('post_id', NULL)->orderBy('created_at', 'DESC')->get();
+        $user = Auth::user();
+
+        return Product::where('user_id', $user->id)->where('post_id', NULL)->orderBy('created_at', 'DESC')->get();
     }
     /**
      * Store a newly created resource in storage.

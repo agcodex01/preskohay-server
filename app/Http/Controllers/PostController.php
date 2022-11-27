@@ -20,7 +20,10 @@ class PostController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+
         return Post::where('status', config('const.post_status.pending'))
+            ->where('user_id', $user->id)
             ->with('user', 'products')
             ->orderBy('created_at', 'DESC')
             ->get();
