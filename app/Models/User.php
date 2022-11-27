@@ -78,8 +78,12 @@ class User extends Authenticatable
         return $this->hasOne(Application::class);
     }
 
-    public function contacts() {
+    public function contacts_send() {
         return $this->hasMany(Contact::class, 'sender_id');
+    }
+
+    public function contacts_receive() {
+        return $this->hasMany(Contact::class, 'receiver_id');
     }
 
     public function searches()
