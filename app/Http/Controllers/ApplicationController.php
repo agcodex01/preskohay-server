@@ -38,7 +38,7 @@ class ApplicationController extends Controller
             // Note: user number must start to 63
             $message = $this->smsService
                 ->to($user->contact_number)
-                ->message('Your application is already confirmed, you can now login to Preskohay app.')
+                ->message('Your application is already confirmed.')
                 ->send();
 
             if ($message->getStatus() == 0) {

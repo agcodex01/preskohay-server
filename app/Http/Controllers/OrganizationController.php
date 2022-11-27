@@ -55,7 +55,7 @@ class OrganizationController extends Controller
      */
     public function update(UserRequest $request, User $organization)
     {
-        return $user->update($request->validated());
+        return $organization->update($request->validated());
     }
 
     /**
