@@ -26,9 +26,11 @@ class UserRequest extends FormRequest
     {
         $req = Request::route();
         $userId = $this->user ? $this->user->id : '';
+
         if ($req->action['as'] == 'organizations.update') {
             $userId = $this->organization ? $this->organization->id : '';
         }
+      
         $rules = [
             'first_name' => 'required',
             'last_name' => 'required',
@@ -44,6 +46,13 @@ class UserRequest extends FormRequest
 
         if ($userId) {
             unset($rules['password']);
+        }
+
+        if ($req->action['as'] == 'update.password') {
+            $rules = [
+                'current' => 'required',
+                'password' => 'required|min:8'
+            ];
         }
 
         return $rules;
