@@ -121,22 +121,22 @@ class OrderController extends Controller
     public function orgDashboard()
     {
         $user = Auth::user();
-        $ids = [];
+        $names = [];
 
         $orders = Order::where('farmer_id', $user->id)
             ->where('status', config('const.order_status.delivered'))
             ->with('products')
             ->get()
-            ->each(function ($order) use (&$ids) {
-                $order->products->each(function($product) use (&$ids) {
-                    array_push($ids, $product->name);
+            ->each(function ($order) use (&$names) {
+                $order->products->each(function($product) use (&$names) {
+                    array_push($names, $product->name);
                 });
             });
         
-        $count = collect(array_count_values($ids))->sortDesc();
+        $count = collect(array_count_values($names))->sortDesc();
 
-        $products = $count->map(function ($value, $id) use (&$ctr) {
-            $item['product_name'] = $id;
+        $products = $count->map(function ($value, $name) {
+            $item['product_name'] = $name;
             $item['count'] = $value;
             
             return $item;
@@ -162,11 +162,7 @@ class OrderController extends Controller
                 $confirmed = $cancelled = 0;
 
                 $query->each(function ($query) use (&$confirmed, &$cancelled) {
-                    if ($query->status == config('const.order_status.delivered')) {
-                        $confirmed++;
-                    } else {
-                        $cancelled++;
-                    }
+                    $query->status == config('const.order_status.delivered') ? $confirmed++ : $cancelled++;
                 });
 
                 $item['name'] = $ndx;
