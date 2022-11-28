@@ -6,8 +6,10 @@ use App\Filters\OrderFilter;
 use App\Models\User;
 use App\Models\Order;
 use App\Events\OrderEvent;
+use App\Models\Product;
 use App\Http\Requests\OrderRequest;
 use App\Http\Services\SmsService;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -119,5 +121,62 @@ class OrderController extends Controller
         event(new OrderEvent($order, $order->user->id));
 
         return $order;
+    }
+
+    public function orgDashboard()
+    {
+        $user = Auth::user();
+        $names = [];
+
+        $orders = Order::where('farmer_id', $user->id)
+            ->where('status', config('const.order_status.delivered'))
+            ->with('products')
+            ->get()
+            ->each(function ($order) use (&$names) {
+                $order->products->each(function($product) use (&$names) {
+                    array_push($names, $product->name);
+                });
+            });
+        
+        $count = collect(array_count_values($names))->sortDesc();
+
+        $products = $count->map(function ($value, $name) {
+            $item['product_name'] = $name;
+            $item['count'] = $value;
+            
+            return $item;
+        });
+
+        $data['products'] = $products->take(3)->values()->all();
+        $data['summaryOrderPlaces'] = $this->placeDeliverSummery($user);
+
+        return $data;  
+    }
+
+    public function placeDeliverSummery($user)
+    {
+        $orders = Order::selectRaw('status, drop_off')
+            ->where('farmer_id', $user->id)
+            ->where(function ($query) {
+                $query->where('status', config('const.order_status.delivered'))
+                    ->orWhere('status', config('const.order_status.cancelled'));
+            })
+            ->get()
+            ->groupBy('drop_off')
+            ->map(function ($query, $ndx) {
+                $confirmed = $cancelled = 0;
+
+                $query->each(function ($query) use (&$confirmed, &$cancelled) {
+                    $query->status == config('const.order_status.delivered') ? $confirmed++ : $cancelled++;
+                });
+
+                $item['name'] = $ndx;
+                $item['confirmed'] = $confirmed;
+                $item['cancelled'] = $cancelled;
+
+                return $item;
+            });
+        
+        return $orders->values()->all();
     }
 }
