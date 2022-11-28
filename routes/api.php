@@ -81,6 +81,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('organizations', OrganizationController::class);
 
     Route::post('/update/password', [UserController::class, 'updatePassword'])->name('update.password');
+    Route::get('/top-sales-products', [OrderController::class, 'orgDashboard'])->name('org.dashboard');
+
 });
-
-
