@@ -17,7 +17,7 @@ class OrderController extends Controller
      */
     public function index(OrderFilter $filter)
     {
-        return Order::filter($filter)->with('user', 'driver')->whereNull('driver_id')->get();
+        return Order::filter($filter)->with('user', 'driver', 'products', 'farmer', 'user')->get();
     }
 
     /**
