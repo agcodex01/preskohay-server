@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ];
     });
     Route::apiResource('users', UserController::class)->except(['store']);
+    Route::get('/user/receiver/{user}', [UserController::class, 'getUserById']);
     Route::post('/logout', [LoginController::class, 'logout'])->name('user.logout');
     Route::get('/messages/{receiver_id}', [ChatController::class, 'fetchMessages']);
     Route::post('/message', [ChatController::class, 'sendMessage']);
@@ -57,18 +58,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders/store/{id}', [OrderController::class, 'store'])->name('order.product');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('order.show');
     Route::post('/orders/update/{order}', [OrderController::class, 'update'])->name('order.product.update');
+    Route::post('/orders/update/{order}/add-driver', [OrderController::class, 'addDriver'])->name('order.product.addDriver');
 
     Route::get('/user-orders/{id}', [OrderController::class, 'orderByUser'])->name('order.user');
     Route::post('/user-orders/update/{order}', [OrderController::class, 'updateStatus'])->name('order.user.update');
-
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders');
-    Route::post('/orders/store/{id}', [OrderController::class, 'store'])->name('order.product');
-    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('order.show');
-    Route::post('/orders/update/{order}', [OrderController::class, 'update'])->name('order.product.update');
-
-    Route::get('/user-orders/{id}', [OrderController::class, 'orderByUser'])->name('order.user');
-    Route::post('/user-orders/update/{order}', [OrderController::class, 'updateStatus'])->name('order.user.update');
-
 
     Route::apiResource('products', ProductController::class);
     Route::apiResource('posts', PostController::class);

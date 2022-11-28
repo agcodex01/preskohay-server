@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Models\Order;
 use App\Http\Requests\OrderRequest;
 use App\Http\Services\SmsService;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -18,7 +18,7 @@ class OrderController extends Controller
      */
     public function index(OrderFilter $filter)
     {
-        return Order::filter($filter)->with('products', 'farmer', 'user')->get();
+        return Order::filter($filter)->with('user', 'driver', 'products', 'farmer', 'user')->get();
     }
 
     /**
@@ -119,8 +119,10 @@ class OrderController extends Controller
 
     public function addDriver(Order $order, Request $request)
     {
-        return $order->update([
+        $order->update([
             'driver_id' => $request->driver_id
         ]);
+
+        return $order->refresh();
     }
 }
