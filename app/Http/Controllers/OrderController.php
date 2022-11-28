@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Filters\OrderFilter;
 use App\Models\User;
 use App\Models\Order;
+use App\Events\OrderEvent;
 use App\Http\Requests\OrderRequest;
 use App\Http\Services\SmsService;
 
@@ -17,7 +18,7 @@ class OrderController extends Controller
      */
     public function index(OrderFilter $filter)
     {
-        return Order::filter($filter)->with('user', 'driver', 'products', 'farmer', 'user')->get();
+        return Order::filter($filter)->with('user', 'driver', 'products', 'farmer')->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -51,6 +52,8 @@ class OrderController extends Controller
         ]);
 
         $order = $user->orders()->latest()->first();
+
+        event(new OrderEvent($order, $order->farmer_id));
 
         foreach($params['products'] as $data) {
             $order->products()
@@ -112,6 +115,8 @@ class OrderController extends Controller
         $params = $request->validated();
 
         $order->update($params);
+
+        event(new OrderEvent($order, $order->user->id));
 
         return $order;
     }
