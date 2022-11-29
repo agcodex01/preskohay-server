@@ -198,4 +198,28 @@ class OrderController extends Controller
 
         return $orders->values()->all();
     }
+
+    public function displayOrdersInDriver()
+    {
+        return Order::selectRaw('status, drop_off')
+            ->where(function ($query) {
+                $query->where('status', config('const.order_status.delivered'))
+                    ->orWhere('status', config('const.order_status.cancelled'));
+            })
+            ->get()
+            ->groupBy('drop_off')
+            ->map(function ($query, $ndx) {
+                $confirmed = $cancelled = 0;
+
+                $query->each(function ($query) use (&$confirmed, &$cancelled) {
+                    $query->status == config('const.order_status.delivered') ? $confirmed++ : $cancelled++;
+                });
+
+                $item['name'] = $ndx;
+                $item['confirmed'] = $confirmed;
+                $item['cancelled'] = $cancelled;
+
+                return $item;
+            })->values()->all();
+    }
 }
