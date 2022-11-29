@@ -33,7 +33,9 @@ class UserController extends Controller
             $data['profile_image'] = $image_base64;
         }
 
-        return User::create($data);
+        $user = User::create($data);
+
+        return $user;
     }
 
     public function update(UserRequest $request, User $user)
@@ -62,6 +64,11 @@ class UserController extends Controller
             ]
         ], 422);
 
+    }
+
+    public function updateUserStatus(Request $request, User $user)
+    {
+        return $user->update(['status' => $request->status]);
     }
 
     public function destroy(User $user)

@@ -15,6 +15,14 @@ class LoginController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
+        if ($user && $user->status == 'disabled') {
+            return response([
+                'errors' => [
+                    'email' => ['Account is disabled!']
+                ]
+            ], 422);
+        }
+
         if ($user && Hash::check($request->password, $user->password)) {
 
             if ($user->user_role == 'driver' && $user->status != 'done') {
