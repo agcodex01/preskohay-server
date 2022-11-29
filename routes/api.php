@@ -58,6 +58,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders/store/{id}', [OrderController::class, 'store'])->name('order.product');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('order.show');
     Route::post('/orders/update/{order}', [OrderController::class, 'update'])->name('order.product.update');
+    Route::post('/orders/update/{order}/add-driver', [OrderController::class, 'addDriver'])->name('order.product.addDriver');
+    Route::post('/orders/update/{order}/mark-as-done', [OrderController::class, 'markAsDone'])->name('order.product.markAsDone');
 
     Route::get('/user-orders/{id}', [OrderController::class, 'orderByUser'])->name('order.user');
     Route::post('/user-orders/update/{order}', [OrderController::class, 'updateStatus'])->name('order.user.update');

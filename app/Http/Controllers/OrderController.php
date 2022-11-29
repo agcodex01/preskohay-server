@@ -9,6 +9,7 @@ use App\Events\OrderEvent;
 use App\Models\Product;
 use App\Http\Requests\OrderRequest;
 use App\Http\Services\SmsService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
@@ -123,6 +124,24 @@ class OrderController extends Controller
         return $order;
     }
 
+    public function addDriver(Order $order, Request $request)
+    {
+        $order->update([
+            'driver_id' => $request->driver_id
+        ]);
+
+        return $order->refresh();
+    }
+
+    public function markAsDone(Order $order, Request $request)
+    {
+        $order->update([
+            'status' => 4
+        ]);
+
+        return $order->refresh();
+    }
+
     public function orgDashboard()
     {
         $user = Auth::user();
@@ -137,20 +156,20 @@ class OrderController extends Controller
                     array_push($names, $product->name);
                 });
             });
-        
+
         $count = collect(array_count_values($names))->sortDesc();
 
         $products = $count->map(function ($value, $name) {
             $item['product_name'] = $name;
             $item['count'] = $value;
-            
+
             return $item;
         });
 
         $data['products'] = $products->take(3)->values()->all();
         $data['summaryOrderPlaces'] = $this->placeDeliverSummery($user);
 
-        return $data;  
+        return $data;
     }
 
     public function placeDeliverSummery($user)
@@ -176,7 +195,7 @@ class OrderController extends Controller
 
                 return $item;
             });
-        
+
         return $orders->values()->all();
     }
 }
