@@ -83,4 +83,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update/password', [UserController::class, 'updatePassword'])->name('update.password');
     Route::get('/top-sales-products', [OrderController::class, 'orgDashboard'])->name('org.dashboard');
 
+    Route::get('/recent-orders-places', [OrderController::class, 'displayOrdersInDriver'])->name('driver.dashboard');
+
 });
