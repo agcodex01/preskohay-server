@@ -13,4 +13,9 @@ class OrderFilter extends Filter {
     function farmerId($id): Builder {
         return $this->builder->where('farmer_id', $id);
     }
+
+    public function driverId($value)
+    {
+        return $this->builder->orWhere('driver_id', $value);
+    }
 }

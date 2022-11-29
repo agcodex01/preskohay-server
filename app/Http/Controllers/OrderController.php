@@ -133,6 +133,15 @@ class OrderController extends Controller
         return $order->refresh();
     }
 
+    public function markAsDone(Order $order, Request $request)
+    {
+        $order->update([
+            'status' => 4
+        ]);
+
+        return $order->refresh();
+    }
+
     public function orgDashboard()
     {
         $user = Auth::user();
