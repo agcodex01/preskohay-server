@@ -6,6 +6,7 @@ use App\Filters\OrderFilter;
 use App\Models\User;
 use App\Models\Order;
 use App\Events\OrderEvent;
+use App\Events\OrderDriverEvent;
 use App\Http\Implementations\SmsImplement;
 use App\Models\Product;
 use App\Http\Requests\OrderRequest;
@@ -125,6 +126,7 @@ class OrderController extends Controller
         $order->update($params);
 
         event(new OrderEvent($order, $order->user->id));
+        event(new OrderDriverEvent());
 
         return $order;
     }
@@ -143,6 +145,8 @@ class OrderController extends Controller
         $order->update([
             'status' => 4
         ]);
+
+        event(new OrderDriverEvent());
 
         return $order->refresh();
     }
