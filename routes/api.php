@@ -88,4 +88,6 @@ Route::middleware(['auth:sanctum', 'user-status'])->group(function () {
 
     Route::get('/recent-orders-places', [OrderController::class, 'displayOrdersInDriver'])->name('driver.dashboard');
 
+    Route::get('/broadcast-drivers/{order}', [OrderController::class, 'broadcastSMSDrivers'])->name('broadcast.sms.drivers');
 });
+

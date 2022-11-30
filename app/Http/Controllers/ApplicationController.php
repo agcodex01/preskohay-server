@@ -48,12 +48,21 @@ class ApplicationController extends Controller
                 $user->update([
                     'status' => 'in_progress'
                 ]);
+
                 return 'ALready confirmed';
             } else {
-                return $message->getStatus();
+                return response([
+                    'errors' => [
+                        'sms' => $message->getStatus()
+                    ]
+                ], 422);
             }
         } catch (\Exception $th) {
-            return $th;
+            return response([
+                'errors' => [
+                    'sms' => $th->getMessage()
+                ]
+            ], 422);
         }
     }
 
