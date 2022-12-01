@@ -11,9 +11,14 @@ use App\Http\Requests\OrderRequest;
 use App\Http\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Implementations\SmsImplement;
 
 class OrderController extends Controller
 {
+    public function __construct(private SmsImplement $smsService)
+    {
+
+    }
     /**
      * Display a listing of the resource.
      *
@@ -116,6 +121,34 @@ class OrderController extends Controller
     public function updateStatus(OrderRequest $request, Order $order)
     {
         $params = $request->validated();
+
+        if ($params['status'] == config('const.order_status.on-the-way')) {
+            $user = $order->user;
+
+            $end_number = substr($user->contact_number, 1, 11);
+            $number = '63'.$end_number;
+            
+            $this->smsService
+                ->to($number)
+                ->message('Hello '.$user->last_name.', '.$user->first_name.'. Your order in Preskohay is now on the way.')
+                ->send();
+        }
+
+        if ($params['status'] == config('const.order_status.confirmed')) {
+            $order->products()->each(function ($product) {
+
+                $total = $product->stocks - $product->pivot->quantity;
+
+                if ($product->pivot->quantity >= $product->stocks) {
+                    $total = 0;
+                }
+
+                $product->update([
+                    'stocks' => $total
+                ]);
+
+            });
+        }
 
         $order->update($params);
 
