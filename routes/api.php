@@ -31,7 +31,7 @@ Route::post('/drivers', [ApplicationController::class, 'store'])->name('register
 Route::post('/drivers/license/{user}', [ApplicationController::class, 'storeApplicationLicense'])->name('drivers.license');
 Route::put('/drivers/motor/{user}', [ApplicationController::class, 'storeApplicationMotor'])->name('drivers.motor');
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'user-status'])->group(function () {
     Route::get('me', function () {
         $user = auth()->user();
         return [
@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ];
     });
     Route::apiResource('users', UserController::class)->except(['store']);
+    Route::post('/user/status/update/{user}', [UserController::class, 'updateUserStatus']);
     Route::get('/user/receiver/{user}', [UserController::class, 'getUserById']);
     Route::post('/logout', [LoginController::class, 'logout'])->name('user.logout');
     Route::get('/messages/{receiver_id}', [ChatController::class, 'fetchMessages']);
@@ -87,4 +88,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/recent-orders-places', [OrderController::class, 'displayOrdersInDriver'])->name('driver.dashboard');
 
+    Route::get('/broadcast-drivers/{order}', [OrderController::class, 'broadcastSMSDrivers'])->name('broadcast.sms.drivers');
 });
+

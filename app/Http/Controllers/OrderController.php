@@ -6,6 +6,8 @@ use App\Filters\OrderFilter;
 use App\Models\User;
 use App\Models\Order;
 use App\Events\OrderEvent;
+use App\Events\OrderDriverEvent;
+use App\Http\Implementations\SmsImplement;
 use App\Models\Product;
 use App\Http\Requests\OrderRequest;
 use App\Http\Services\SmsService;
@@ -153,6 +155,7 @@ class OrderController extends Controller
         $order->update($params);
 
         event(new OrderEvent($order, $order->user->id));
+        event(new OrderDriverEvent());
 
         return $order;
     }
@@ -172,7 +175,43 @@ class OrderController extends Controller
             'status' => 4
         ]);
 
+        event(new OrderDriverEvent());
+
         return $order->refresh();
+    }
+
+    public function broadcastSMSDrivers(Order $order)
+    {
+        $drivers = User::where('user_role', 'driver')
+            ->where('status', 'done')
+            ->get();
+
+        if ($drivers) {
+            $drivers->each(function ($driver) use ($order) {
+                // Note: user number must start to 63
+                $end_number = substr($driver->contact_number, 1, 11);
+                $number = '63'.$end_number;
+
+                $message = 'There is a new Delivery Title POI-'.$order->id.' to '.
+                    $order->drop_off.'. If you want to Deliver this order, please require as Driver.';
+
+                $this->smsService->to($number)
+                    ->message($message)
+                    ->send();
+            });
+
+            return response([
+                'success' => [
+                    'sms' => 'Already send sms to drivers'
+                ]
+            ], 200);
+        }
+
+        return response([
+            'errors' => [
+                'drivers' => ['No drivers available']
+            ]
+        ], 422);
     }
 
     public function orgDashboard()
