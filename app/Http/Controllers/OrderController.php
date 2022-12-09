@@ -13,7 +13,6 @@ use App\Http\Requests\OrderRequest;
 use App\Http\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Implementations\SmsImplement;
 
 class OrderController extends Controller
 {
@@ -80,6 +79,20 @@ class OrderController extends Controller
             'total' => $total,
         ]);
 
+        $order->products()->each(function ($product) {
+
+            $total = $product->stocks - $product->pivot->quantity;
+
+            if ($product->pivot->quantity >= $product->stocks) {
+                $total = 0;
+            }
+
+            $product->update([
+                'stocks' => $total
+            ]);
+
+        });
+
         return $order;
     }
 
@@ -136,19 +149,11 @@ class OrderController extends Controller
                 ->send();
         }
 
-        if ($params['status'] == config('const.order_status.confirmed')) {
+        if ($params['status'] == config('const.order_status.cancelled')) {
             $order->products()->each(function ($product) {
-
-                $total = $product->stocks - $product->pivot->quantity;
-
-                if ($product->pivot->quantity >= $product->stocks) {
-                    $total = 0;
-                }
-
                 $product->update([
-                    'stocks' => $total
+                    'stocks' => $product->stocks + $product->pivot->quantity
                 ]);
-
             });
         }
 
