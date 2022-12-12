@@ -50,13 +50,23 @@ class PostController extends Controller
             ->with('products','user')
             ->get();
 
-        foreach($posts as $post) {
-            foreach($post->products as $product) {
-                foreach($searches as $data) {
-                    if ($product->name == $data->search) {
-                        $post['total_search_product'] += $data->total;
+        foreach($posts as $ndx => $post) {
+            foreach($post->products as $key => $product) {
+                if ($product->stocks <= 0) {
+                    unset($post->products[$key]);
+                } else {
+                    foreach($searches as $data) {
+                        if ($product->name == $data->search) {
+                            $post['total_search_product'] += $data->total;
+                        }
                     }
                 }
+            }
+
+            $post->products = $post->products->values()->all();
+
+            if (empty($post->products)) {
+                unset($posts[$ndx]);
             }
         }
 
