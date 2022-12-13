@@ -80,13 +80,14 @@ Route::middleware(['auth:sanctum', 'user-status'])->group(function () {
 
     Route::get('/newsfeed', [PostController::class, 'newsFeed'])->name('post.newsfeed');
     Route::post('/newsfeed/search', [RecentSearchController::class, 'store'])->name('post.search');
-    
+
     Route::match(['get', 'post'], '/top-sales-products', [OrderController::class, 'orgDashboard'])->name('org.dashboard');
+    Route::match(['get', 'post'], '/top-sales', [ApplicationController::class, 'getTopSales']);
     Route::apiResource('organizations', OrganizationController::class);
 
     Route::post('/update/password', [UserController::class, 'updatePassword'])->name('update.password');
-    
+
     Route::get('/recent-orders-places', [OrderController::class, 'displayOrdersInDriver'])->name('driver.dashboard');
-    
+
     Route::get('/broadcast-drivers/{order}', [OrderController::class, 'broadcastSMSDrivers'])->name('broadcast.sms.drivers');
 });

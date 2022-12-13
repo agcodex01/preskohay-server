@@ -7,6 +7,8 @@ use App\Http\Requests\UserRequest;
 use App\Http\Requests\ApplicationRequest;
 use App\Http\Implementations\SmsImplement;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
+use App\Models\Order;
 
 class ApplicationController extends Controller
 {
@@ -14,6 +16,7 @@ class ApplicationController extends Controller
     {
 
     }
+
     public function index()
     {
         return User::selectRaw('status, count(status) as total')
@@ -21,6 +24,69 @@ class ApplicationController extends Controller
             ->whereHas('application')
             ->groupBy('status')
             ->get();
+    }
+
+    public function getTopSales(Request $request)
+    {
+        $root_crops = $condiments = $vegetables = $fruits = $mixed = [];
+        $year = $request->year ?? now()->year;
+        $month = $request->month ?? now()->month;
+
+        $orders = Order::where('status', config('const.order_status.delivered'))
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->with('products')
+            ->get();
+
+        foreach($orders as $order) {
+            foreach($order->products as $product) {
+                switch ($product['category']) {
+                    case 'Root Crops':
+                    case 'root crops':
+                        array_push($root_crops, $product['name']);
+                        break;
+                    case 'Condiments':
+                    case 'condiments':
+                        array_push($condiments, $product['name']);
+                        break;
+                    case 'Vegetables':
+                    case 'vegetables':
+                        array_push($vegetables, $product['name']);
+                        break;
+                    case 'Fruits':
+                    case 'fruits':
+                        array_push($fruits, $product['name']);
+                        break;
+                    case 'mixed':
+                        array_push($mixed, $product['name']);
+                        break;
+                }
+            }
+        }
+
+        $mixed      = collect(array_count_values($mixed))->sortDesc();
+        $fruits     = collect(array_count_values($fruits))->sortDesc();
+        $root_crops = collect(array_count_values($root_crops))->sortDesc();
+        $condiments = collect(array_count_values($condiments))->sortDesc();
+        $vegetables = collect(array_count_values($vegetables))->sortDesc();
+
+        $data['mixed']      = $this->sort($mixed);
+        $data['fruits']     = $this->sort($fruits);
+        $data['root_crops'] = $this->sort($root_crops);
+        $data['condiments'] = $this->sort($condiments);
+        $data['vegetables'] = $this->sort($vegetables);
+
+        return $data;
+    }
+
+    public function sort($category)
+    {
+        return $category->map(function ($value, $name) {
+            $item['product_name'] = $name;
+            $item['count'] = $value;
+
+            return $item;
+        })->take(5)->values()->all();
     }
 
     public function list()

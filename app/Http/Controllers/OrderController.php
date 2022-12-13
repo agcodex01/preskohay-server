@@ -142,7 +142,7 @@ class OrderController extends Controller
 
             $end_number = substr($user->contact_number, 1, 11);
             $number = '63'.$end_number;
-            
+
             $this->smsService
                 ->to($number)
                 ->message('Hello '.$user->last_name.', '.$user->first_name.'. Your order in Preskohay is now on the way.')
@@ -222,7 +222,7 @@ class OrderController extends Controller
     public function orgDashboard(Request $request)
     {
         $user = Auth::user();
-        
+
         $root_crops = $condiments = $vegetables = $fruits = $mixed = [];
         $year = $request->year ?? now()->year;
         $month = $request->month ?? now()->month;
@@ -271,7 +271,7 @@ class OrderController extends Controller
         $data['root_crops'] = $this->sort($root_crops);
         $data['condiments'] = $this->sort($condiments);
         $data['vegetables'] = $this->sort($vegetables);
-        
+
         $data['summaryOrderPlaces'] = $this->placeDeliverSummery($user);
 
         return $data;
@@ -284,7 +284,7 @@ class OrderController extends Controller
             $item['count'] = $value;
 
             return $item;
-        })->take(3)->values()->all();
+        })->take(5)->values()->all();
     }
 
     public function placeDeliverSummery($user)
