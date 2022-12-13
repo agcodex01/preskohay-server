@@ -219,34 +219,72 @@ class OrderController extends Controller
         ], 422);
     }
 
-    public function orgDashboard()
+    public function orgDashboard(Request $request)
     {
         $user = Auth::user();
-        $names = [];
+        
+        $root_crops = $condiments = $vegetables = $fruits = $mixed = [];
+        $year = $request->year ?? now()->year;
+        $month = $request->month ?? now()->month;
 
         $orders = Order::where('farmer_id', $user->id)
             ->where('status', config('const.order_status.delivered'))
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
             ->with('products')
-            ->get()
-            ->each(function ($order) use (&$names) {
-                $order->products->each(function($product) use (&$names) {
-                    array_push($names, $product->name);
-                });
-            });
+            ->get();
 
-        $count = collect(array_count_values($names))->sortDesc();
+        foreach($orders as $order) {
+            foreach($order->products as $product) {
+                switch ($product['category']) {
+                    case 'Root Crops':
+                    case 'root crops':
+                        array_push($root_crops, $product['name']);
+                        break;
+                    case 'Condiments':
+                    case 'condiments':
+                        array_push($condiments, $product['name']);
+                        break;
+                    case 'Vegetables':
+                    case 'vegetables':
+                        array_push($vegetables, $product['name']);
+                        break;
+                    case 'Fruits':
+                    case 'fruits':
+                        array_push($fruits, $product['name']);
+                        break;
+                    case 'mixed':
+                        array_push($mixed, $product['name']);
+                        break;
+                }
+            }
+        }
 
-        $products = $count->map(function ($value, $name) {
+        $mixed      = collect(array_count_values($mixed))->sortDesc();
+        $fruits     = collect(array_count_values($fruits))->sortDesc();
+        $root_crops = collect(array_count_values($root_crops))->sortDesc();
+        $condiments = collect(array_count_values($condiments))->sortDesc();
+        $vegetables = collect(array_count_values($vegetables))->sortDesc();
+
+        $data['mixed']      = $this->sort($mixed);
+        $data['fruits']     = $this->sort($fruits);
+        $data['root_crops'] = $this->sort($root_crops);
+        $data['condiments'] = $this->sort($condiments);
+        $data['vegetables'] = $this->sort($vegetables);
+        
+        $data['summaryOrderPlaces'] = $this->placeDeliverSummery($user);
+
+        return $data;
+    }
+
+    public function sort($category)
+    {
+        return $category->map(function ($value, $name) {
             $item['product_name'] = $name;
             $item['count'] = $value;
 
             return $item;
-        });
-
-        $data['products'] = $products->take(3)->values()->all();
-        $data['summaryOrderPlaces'] = $this->placeDeliverSummery($user);
-
-        return $data;
+        })->take(3)->values()->all();
     }
 
     public function placeDeliverSummery($user)
