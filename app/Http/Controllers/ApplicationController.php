@@ -10,6 +10,7 @@ use App\Http\Implementations\SmsImplement;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\Order;
+use Auth;
 
 class ApplicationController extends Controller
 {
@@ -86,9 +87,16 @@ class ApplicationController extends Controller
         $year = $request->year ?? now()->year;
         $month = $request->month ?? now()->month;
 
-        return Product::with(['orders' => function ($query) use ($year, $month) {
+        $productQuery = Product::with(['orders' => function ($query) use ($year, $month) {
             return $query->whereYear('orders.created_at', $year)->whereMonth('orders.created_at', $month);
-        }])->get()
+        }]);
+
+        if ($request->isOrg) {
+            $user = Auth::user();
+            $productQuery->where('user_id', $user->id);
+        }
+
+        return $productQuery->get()
                 ->groupBy('category')
                 ->map(function ($category) {
                     return $category->map(function ($product) {
