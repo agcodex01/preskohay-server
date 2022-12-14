@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProductRequest extends FormRequest
@@ -13,10 +14,6 @@ class ProductRequest extends FormRequest
      */
     public function authorize()
     {
-        // $user = \Auth::user();
-
-        // return $user ? true : false;
-
         return true;
     }
 
@@ -27,13 +24,23 @@ class ProductRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'name'              => 'required|unique:products',
+        $req = Request::route();
+        $response = [
+            'name'              => 'required',
             'unit'              => 'required',
-            'stocks'            => 'required',
+            'image'             => 'required',
+            'stocks'            => 'required|numeric',
             'category'          => 'required',
             'description'       => 'required',
-            'price_per_unit'    => 'required'
+            'price_per_unit'    => 'required|numeric',
+            'estimated_harvest_date' => 'required',
+            'user_id' => 'sometimes'
         ];
+        if ($req->action['as'] == 'products.store') {
+            $response['name'] = 'required|unique:products';
+        }
+
+        return $response;
+
     }
 }

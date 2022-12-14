@@ -4,16 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Http\Requests\ProductRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
-    public $data = [];
-
-    public function __construct()
-    {
-        $this->data['error'] = true;
-        $this->data['message'] = 'Something went wrong.';
-    }
     /**
      * Display a listing of the resource.
      *
@@ -21,19 +15,17 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Product::all();
+        $user = Auth::user();
+
+        return Product::where('user_id', $user->id)->orderBy('created_at', 'DESC')->get();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function availableProductsToPost()
     {
-        //
-    }
+        $user = Auth::user();
 
+        return Product::where('user_id', $user->id)->where('post_id', NULL)->orderBy('created_at', 'DESC')->get();
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -42,16 +34,9 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        $params = $request->validated();
+        $product = Product::create($request->validated());
 
-        $newProduct = Product::create($params);
-
-        if ($newProduct) {
-            $this->data['message'] = 'Successfully added new product!';
-            $this->data['error'] = false;
-        }
-
-        return $this->data;
+        return $product;
     }
 
     /**
@@ -74,16 +59,9 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, Product $product)
     {
-        $params = $request->validated();
+        $product->update($request->validated());
 
-        $updated = $product->update($params);
-
-        if ($updated) {
-            $this->data['error']   = false;
-            $this->data['message'] = 'Successfully updated the product!';
-        }
-
-        return $this->data;
+        return $product;
     }
 
     /**
@@ -94,13 +72,6 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $deleted = $product->delete();
-
-        if ($deleted) {
-            $this->data['error'] = false;
-            $this->data['message'] = 'Successfully deleted';
-        }
-
-        return $this->data;
+        return $product->delete();
     }
 }

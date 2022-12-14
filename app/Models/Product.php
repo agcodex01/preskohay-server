@@ -12,10 +12,24 @@ class Product extends Model
 
     protected $fillable = [
         'name',
-        'category',
-        'price_per_unit',
         'unit',
+        'image',
+        'stocks',
+        'post_id',
+        'category',
         'description',
-        'stocks'
+        'price_per_unit',
+        'estimated_harvest_date',
+        'user_id'
     ];
+
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class);
+    }
+
+    public function post()
+    {
+
+    }
 }
