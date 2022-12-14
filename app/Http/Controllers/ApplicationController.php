@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Product;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\ApplicationRequest;
 use App\Http\Implementations\SmsImplement;
@@ -77,6 +78,26 @@ class ApplicationController extends Controller
         $data['vegetables'] = $this->sort($vegetables);
 
         return $data;
+    }
+
+    public function getTopSalesFromCustomers(Request $request)
+    {
+        $data = [];
+        $year = $request->year ?? now()->year;
+        $month = $request->month ?? now()->month;
+
+        return Product::with(['orders' => function ($query) use ($year, $month) {
+            return $query->whereYear('orders.created_at', $year)->whereMonth('orders.created_at', $month);
+        }])->get()
+                ->groupBy('category')
+                ->map(function ($category) {
+                    return $category->map(function ($product) {
+                        $product['total_customer_order'] = $product->orders->unique('user_id')->count();
+                        return $product;
+                    })->filter(function ($product) {
+                        return $product->total_customer_order > 0;
+                    });
+                });
     }
 
     public function sort($category)

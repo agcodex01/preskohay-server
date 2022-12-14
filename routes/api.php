@@ -83,6 +83,7 @@ Route::middleware(['auth:sanctum', 'user-status'])->group(function () {
 
     Route::match(['get', 'post'], '/top-sales-products', [OrderController::class, 'orgDashboard'])->name('org.dashboard');
     Route::match(['get', 'post'], '/top-sales', [ApplicationController::class, 'getTopSales']);
+    Route::match(['get', 'post'], '/top-sales/customer', [ApplicationController::class, 'getTopSalesFromCustomers']);
     Route::apiResource('organizations', OrganizationController::class);
 
     Route::post('/update/password', [UserController::class, 'updatePassword'])->name('update.password');
