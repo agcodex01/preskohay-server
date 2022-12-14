@@ -337,4 +337,70 @@ class OrderController extends Controller
                 return $item;
             })->values()->all();
     }
+
+    public function topDriversListAdmin(Request $request)
+    {
+        $take = $request->take ?? 5;
+        
+        return Order::where(function ($query) {
+                $query->where('status', config('const.order_status.delivered'))
+                        ->orWhere('status', config('const.order_status.cancelled'));
+            })
+            ->with('driver')
+            ->whereHas('driver')
+            ->get()
+            ->groupBy('driver')
+            ->map(function ($query, $ndx) {
+                $confirmed = $cancelled = 0;
+
+                $query->each(function ($query) use (&$confirmed, &$cancelled) {
+                    $query->status == config('const.order_status.delivered') ? $confirmed++ : $cancelled++;
+                });
+                $driver = json_decode($ndx);
+                $item['name'] = $driver->first_name.' '.$driver->last_name;
+                $item['confirmed'] = $confirmed;
+                $item['cancelled'] = $cancelled;
+
+                return $item;
+            })
+            ->sortByDesc(function ($query) {
+                return $query['confirmed'];
+            })
+            ->take($take)->values()->all();
+    }
+
+    public function topDriversListOrg(Request $request)
+    {
+        $take = $request->take ?? 5;
+
+        $user = Auth::user();
+
+        return Order::where('farmer_id', $user->id)
+            ->where(function ($query) {
+                $query->where('status', config('const.order_status.delivered'))
+                        ->orWhere('status', config('const.order_status.cancelled'));
+            })
+            ->with('driver')
+            ->whereHas('driver')
+            ->get()
+            ->groupBy('driver')
+            ->map(function ($query, $ndx) {
+                $confirmed = $cancelled = 0;
+
+                $query->each(function ($query) use (&$confirmed, &$cancelled) {
+                    $query->status == config('const.order_status.delivered') ? $confirmed++ : $cancelled++;
+                });
+                $driver = json_decode($ndx);
+                $item['name'] = $driver->first_name.' '.$driver->last_name;
+                $item['confirmed'] = $confirmed;
+                $item['cancelled'] = $cancelled;
+
+                return $item;
+            })
+            ->sortByDesc(function ($query) {
+                return $query['confirmed'];
+            })
+            ->take($take)->values()->all();
+    }
+
 }
