@@ -132,7 +132,7 @@ class ApplicationController extends Controller
         try {
             // Note: user number must start to 63
             $end_number = substr($user->contact_number, 1, 11);
-            $number = '63'.$end_number;
+            $number = '+63'.$end_number;
 
             $message = $this->smsService
                 ->to($number)
