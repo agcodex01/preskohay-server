@@ -24,7 +24,7 @@ use App\Http\Controllers\OrganizationController;
 |
 */
 
-Route::post('/login', [LoginController::class, 'login'])->name('user.login');
+Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/user/register', [RegisterController::class, 'execute'])->name('customers.register');
 
 Route::post('/drivers', [ApplicationController::class, 'store'])->name('register.driver');
