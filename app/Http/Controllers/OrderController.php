@@ -18,7 +18,6 @@ class OrderController extends Controller
 {
     public function __construct(private SmsImplement $smsService)
     {
-
     }
     /**
      * Display a listing of the resource.
@@ -64,7 +63,7 @@ class OrderController extends Controller
 
         event(new OrderEvent($order, $order->farmer_id));
 
-        foreach($params['products'] as $data) {
+        foreach ($params['products'] as $data) {
             $order->products()
                 ->syncWithoutDetaching([
                     $data['id'] => [
@@ -90,7 +89,6 @@ class OrderController extends Controller
             $product->update([
                 'stocks' => $total
             ]);
-
         });
 
         return $order;
@@ -141,12 +139,18 @@ class OrderController extends Controller
             $user = $order->user;
 
             $end_number = substr($user->contact_number, 1, 11);
-            $number = '63'.$end_number;
+            $number = '63' . $end_number;
 
-            $this->smsService
-                ->to($number)
-                ->message('Hello '.$user->last_name.', '.$user->first_name.'. Your order in Preskohay is now on the way.')
-                ->send();
+            try {
+                $this->smsService
+                    ->to($number)
+                    ->message('Hello ' . $user->last_name . ', ' . $user->first_name . '. Your order in Preskohay is now on the way.')
+                    ->send();
+            } catch (\Throwable $th) {
+                return response([
+                    'message' =>  "Vonage: " . $th->getMessage()
+                ], 409);
+            }
         }
 
         if ($params['status'] == config('const.order_status.cancelled')) {
@@ -187,23 +191,35 @@ class OrderController extends Controller
 
     public function broadcastSMSDrivers(Order $order)
     {
+        $driverOTWIds = Order::where('status', 1)
+            ->whereNotNull('driver_id')
+            ->pluck('driver_id');
+
         $drivers = User::where('user_role', 'driver')
             ->where('status', 'done')
+            ->whereNotIn('id', $driverOTWIds)
             ->get();
 
         if ($drivers) {
-            $drivers->each(function ($driver) use ($order) {
-                // Note: user number must start to 63
-                $end_number = substr($driver->contact_number, 1, 11);
-                $number = '63'.$end_number;
+            try {
+                $drivers->each(function ($driver) use ($order) {
+                    // Note: user number must start to 63
+                    $end_number = substr($driver->contact_number, 1, 11);
+                    $number = '63' . $end_number;
 
-                $message = 'There is a new Delivery Title POI-'.$order->id.' to '.
-                    $order->drop_off.'. If you want to Deliver this order, please require as Driver.';
+                    $message = 'There is a new Delivery Title POI-' . $order->id . ' to ' .
+                        $order->drop_off . '. If you want to Deliver this order, please require as Driver.';
 
-                $this->smsService->to($number)
-                    ->message($message)
-                    ->send();
-            });
+                    $this->smsService->to($number)
+                        ->message($message)
+                        ->send();
+                });
+            } catch (\Throwable $th) {
+                return response([
+                    'message' => "Vonage: " . $th->getMessage()
+                ], 409);
+            }
+
 
             return response([
                 'success' => [
@@ -234,8 +250,8 @@ class OrderController extends Controller
             ->with('products')
             ->get();
 
-        foreach($orders as $order) {
-            foreach($order->products as $product) {
+        foreach ($orders as $order) {
+            foreach ($order->products as $product) {
                 switch ($product['category']) {
                     case 'Root Crops':
                     case 'root crops':
@@ -341,11 +357,11 @@ class OrderController extends Controller
     public function topDriversListAdmin(Request $request)
     {
         $take = $request->take ?? 5;
-        
+
         return Order::where(function ($query) {
-                $query->where('status', config('const.order_status.delivered'))
-                        ->orWhere('status', config('const.order_status.cancelled'));
-            })
+            $query->where('status', config('const.order_status.delivered'))
+                ->orWhere('status', config('const.order_status.cancelled'));
+        })
             ->with('driver')
             ->whereHas('driver')
             ->get()
@@ -357,7 +373,7 @@ class OrderController extends Controller
                     $query->status == config('const.order_status.delivered') ? $confirmed++ : $cancelled++;
                 });
                 $driver = json_decode($ndx);
-                $item['name'] = $driver->first_name.' '.$driver->last_name;
+                $item['name'] = $driver->first_name . ' ' . $driver->last_name;
                 $item['confirmed'] = $confirmed;
                 $item['cancelled'] = $cancelled;
 
@@ -378,7 +394,7 @@ class OrderController extends Controller
         return Order::where('farmer_id', $user->id)
             ->where(function ($query) {
                 $query->where('status', config('const.order_status.delivered'))
-                        ->orWhere('status', config('const.order_status.cancelled'));
+                    ->orWhere('status', config('const.order_status.cancelled'));
             })
             ->with('driver')
             ->whereHas('driver')
@@ -391,7 +407,7 @@ class OrderController extends Controller
                     $query->status == config('const.order_status.delivered') ? $confirmed++ : $cancelled++;
                 });
                 $driver = json_decode($ndx);
-                $item['name'] = $driver->first_name.' '.$driver->last_name;
+                $item['name'] = $driver->first_name . ' ' . $driver->last_name;
                 $item['confirmed'] = $confirmed;
                 $item['cancelled'] = $cancelled;
 
@@ -402,5 +418,4 @@ class OrderController extends Controller
             })
             ->take($take)->values()->all();
     }
-
 }
