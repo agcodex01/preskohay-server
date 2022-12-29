@@ -370,7 +370,7 @@ class OrderController extends Controller
                 $confirmed = $cancelled = 0;
 
                 $orders->each(function ($order) use (&$confirmed, &$cancelled) {
-                    $order->status == config('const.orders_status.delivered') ? $confirmed++ : $cancelled++;
+                    $order->status == config('const.order_status.delivered') ? $confirmed++ : $cancelled++;
                 });
                 $driver = $orders[0]->driver;
                 $item['name'] = $driver->first_name . ' ' . $driver->last_name;
