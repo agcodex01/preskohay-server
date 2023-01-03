@@ -401,23 +401,25 @@ class OrderController extends Controller
             ->with('driver')
             ->whereHas('driver')
             ->get()
-            ->groupBy('driver')
-            ->map(function ($query, $ndx) {
+            ->groupBy('driver_id')
+            ->map(function ($orders, $ndx) {
                 $confirmed = $cancelled = 0;
 
-                $query->each(function ($query) use (&$confirmed, &$cancelled) {
-                    $query->status == config('const.order_status.delivered') ? $confirmed++ : $cancelled++;
+                $orders->each(function ($order) use (&$confirmed, &$cancelled) {
+                    $order->status == config('const.order_status.delivered') ? $confirmed++ : $cancelled++;
                 });
-                $driver = json_decode($ndx);
+                $driver = $orders[0]->driver;
                 $item['name'] = $driver->first_name . ' ' . $driver->last_name;
                 $item['confirmed'] = $confirmed;
                 $item['cancelled'] = $cancelled;
 
                 return $item;
             })
-            ->sortByDesc(function ($query) {
-                return $query['confirmed'];
+            ->sortByDesc(function ($orders) {
+                return $orders['confirmed'];
             })
-            ->take($take)->values()->all();
+            ->take($take)
+            ->values()
+            ->all();
     }
 }
