@@ -61,7 +61,7 @@ class OrderController extends Controller
 
         $order = $user->orders()->latest()->first();
 
-        event(new OrderEvent($order, $order->farmer_id));
+        event(new OrderEvent($order->farmer_id));
 
         foreach ($params['products'] as $data) {
             $order->products()
@@ -163,7 +163,7 @@ class OrderController extends Controller
 
         $order->update($params);
 
-        event(new OrderEvent($order, $order->user->id));
+        event(new OrderEvent($order->user->id));
         event(new OrderDriverEvent());
 
         return $order;
