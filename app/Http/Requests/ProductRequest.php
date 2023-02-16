@@ -37,7 +37,7 @@ class ProductRequest extends FormRequest
             'user_id' => 'sometimes'
         ];
         if ($req->action['as'] == 'products.store') {
-            $response['name'] = 'required|unique:products';
+            $response['name'] = 'required|unique:products,deleted_at,NULL';
         }
 
         return $response;
